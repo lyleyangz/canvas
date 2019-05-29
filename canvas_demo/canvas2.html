@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CANVAS_bg</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0,minimum-scale=1,user-scalable=no">
+    <script src="./js/jquery.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var ratio = window.devicePixelRatio;
+    var startY =0,endY = 0,currentDis=0;
+    var totalHeight = 0;
+    // 1.准备画布
+    // 2.选择画笔
+    // 3.选择颜料
+    // 4.画出轮廓
+    // 5.填充颜色
+    window.onload = function () {
+        var canvas1 = document.getElementById('canvas');
+        var cxt1 = canvas1.getContext('2d');
+        var cw = canvas1.offsetWidth;
+        var ch = canvas1.offsetHeight;
+        var widthratio = cw / 375;
+        var heightratio = ch / 667;
+        var scorllratio = widthratio*ratio/2;
+        var img2 = new Image();
+        img2.src = 'img/page3_atlas_P_2.png';
+        var img3 = new Image();
+        img3.src = 'img/page3_atlas_P_3.png';
+        var img4 = new Image();
+        img4.src = 'img/page3_atlas_P_.png'
+        var topMusic = new Image();
+        topMusic.src = "./img/loading_atlas_P_.png"
+        
+        var bg_first = new Image();
+        bg_first.src = "./img/bg_1.jpg";
+        var bg_second = new Image();
+        bg_second.src = "./img/bg_2.jpg";
+        var bg_third = new Image();
+        bg_third.src = "./img/bg_3.jpg";
+        var bg_four = new Image();
+        bg_four.src = "./img/bg_4.jpg";
+        
+        bg_four.onload = function () {
+            bg(0);
+            setTimeout(function () {
+                drawImg()
+            }, 500);
+        }
+        function BG(number){
+            var parameter={
+                width:0,
+                height:0
+            }
+            switch(number){
+                case 1:
+                parameter.width = bg_first.width;
+                parameter.height = bg_first.height;
+                break;
+                case 2:
+                parameter.width = bg_second.width;
+                parameter.height = bg_second.height;
+                break;
+                case 3:
+                parameter.width = bg_third.width;
+                parameter.height = bg_third.height;
+                break;
+                case 4:
+                parameter.width = bg_four.width;
+                parameter.height = bg_four.height;
+                break;
+            }
+            return parameter
+        }
+        function bg(Y){
+            var imgW = BG(1).width;
+            var imgH = BG(1).height;
+            resizeCanvas(cw * ratio, ch * ratio);
+            totalHeight = (cw * imgH * ratio / imgW) + (cw *  BG(2).height * ratio /  BG(2).width) + (cw *  BG(3).height * ratio /  BG(3).width) + (cw *  BG(4).height * ratio /  BG(4).width);
+            cxt1.translate(0,Y);
+            cxt1.save()
+            cxt1.drawImage(bg_first, 0, 0, cw * ratio, cw * imgH * ratio / imgW);
+            cxt1.drawImage(bg_second, 0,(cw * imgH * ratio / imgW), cw * ratio, cw *  BG(2).height * ratio /  BG(2).width);  //第二章背景图
+            cxt1.drawImage(bg_third, 0,(cw * imgH * ratio / imgW) + (cw *  BG(2).height * ratio /  BG(2).width), cw * ratio, cw *  BG(3).height * ratio /  BG(3).width);  //第3章背景图
+            cxt1.drawImage(bg_four,  0,(cw * imgH * ratio / imgW) + (cw *  BG(2).height * ratio /  BG(2).width) + (cw *  BG(3).height * ratio /  BG(3).width), cw * ratio, cw *  BG(4).height * ratio /  BG(4).width);  //第4章背景图 
+
+            cxt1.restore()
+        }
+        window.addEventListener('touchstart', e => {
+            var touch = event.changedTouches[0];
+            startY = touch.pageY;
+        }, { passive: false });
+        window.addEventListener('touchmove', e => {
+            var touch = event.changedTouches[0];
+            endY = touch.pageY;
+            currentDis += endY - startY;
+            startY = endY;
+            // 向下滑
+            // if(endY - startY>0){
+                
+            // }else if(endY - startY<0){
+            //     // 向上滑
+            // }
+            if(-currentDis>=totalHeight){
+                currentDis = -totalHeight;
+            }
+            if(-currentDis<=0){
+                currentDis = 0;
+            }
+            bg(currentDis);
+            console.log(currentDis)
+            drawImg()
+        }, { passive: false });
+        window.addEventListener('touchend', e => {
+            var touch = e.changedTouches[0];
+        }, { passive: false });
+
+        function drawImg() {
+
+            drawImage(img2, 997, 1407, 368, 284, 0, 29.5);       //左侧第一个图
+            drawImage(img3, 620, 0, 204, 230, 273, 27);         //右侧第一个图
+            drawImage(img2, 1852, 925, 180, 468, 286, 96.5);       //左侧第二个图
+            drawImage(img2, 752, 920, 242, 528, 0, 69);         //右侧第二个图
+            drawImage(img3, 448, 860, 296, 74, 22, 17.5);       //王者荣耀，kpl，vivo图标
+            drawImage(img3, 826, 0, 154, 300, 0, 149.5);         //左侧第三个图
+            drawImage(img2, 0, 296, 750, 236, 0, 256);         //致敬巅峰上面第三个图
+            drawImage(img2, 0, 0, 750, 288, 0, 281.5);         //致敬巅峰上面第二个图
+            cxt1.save()
+            cxt1.translate(0,currentDis/ratio*0.25)
+            drawImage(img4, 0, 653, 750, 612, 0, 358);         //致敬巅峰上面第一个图
+            drawImage(img4, 1020, 0, 488, 598, 71, 47.5);       //致敬巅峰图
+            cxt1.restore()
+            cxt1.save()
+            cxt1.translate(0,currentDis/ratio*0.12)
+            drawImage(img2, 1366, 1512, 510, 152, 60, 392.7);     //致敬巅峰字
+            drawImage(img4, 1493, 615, 490, 408, 81.5, 423.7);     //KPL
+            cxt1.restore()
+            drawImage(img4, 752, 0, 270, 1580, 119.5, 620.3);     //天梯
+            
+            cxt1.save()
+            let hozzL_one = -currentDis>400*scorllratio ? (currentDis+400*scorllratio):0;
+            cxt1.translate(hozzL_one,0)
+            drawImage(img2, 1084, 1693,344, 216,0,620,172, 108);     //天梯左边第一层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzR_one = -currentDis>390*scorllratio ? -(currentDis+390*scorllratio)*3:0;
+            cxt1.translate(hozzR_one,0)
+            drawImage(img2, 718, 1693,364, 202,192,620,182, 101);     //天梯右边第一层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzR_two = -currentDis>470*scorllratio ? -(currentDis+470*scorllratio)*3:0;
+            cxt1.translate(hozzR_two,0)
+            drawImage(img3, 0, 876,193, 100,278,760);     //天梯左边第2层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzL_two = -currentDis>485*scorllratio ? (currentDis+485*scorllratio):0;
+            cxt1.translate(hozzL_two,0)
+            drawImage(img3, 899, 303,119, 100,0,760);     //天梯右边第2层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzL_three = -currentDis>510*scorllratio ? (currentDis+510*scorllratio):0;
+            cxt1.translate(hozzL_three,0)
+            drawImage(img3, 330, 101,281, 86,20,836);     //天梯左边第3层云朵
+            cxt1.restore()
+            
+
+
+            /************************************************************天梯左边字**********************************************************************************************/
+            cxt1.save()
+            let scaleword= 1-(-currentDis>400*scorllratio ? -(currentDis+400*scorllratio):0)/100>0 ? (1-(-currentDis>400*scorllratio ? -(currentDis+400*scorllratio):0)/100):0
+            cxt1.scale(scaleword,scaleword);
+            drawImage(img3, 297, 1138, 188, 50, (57*ratio-(188*scaleword-188))/scaleword/ratio, (620*ratio-(50*scaleword-50))/scaleword/ratio);        //天梯左边第1行字
+            cxt1.restore()
+            
+            cxt1.save()
+            let scaleword_s= 1-(-currentDis>410*scorllratio ? -(currentDis+410*scorllratio):0)/100>0 ? (1-(-currentDis>410*scorllratio ? -(currentDis+410*scorllratio):0)/100):0;
+            cxt1.scale(scaleword_s,scaleword_s);
+            drawImage(img3, 134, 1057, 188, 73, (57*ratio-(188*scaleword_s-188))/scaleword_s/ratio, (635*ratio-(73*scaleword_s-73))/scaleword_s/ratio);       //天梯左边第2行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_t= 1-(-currentDis>420*scorllratio ? -(currentDis+420*scorllratio):0)/100>0 ? (1-(-currentDis>420*scorllratio ? -(currentDis+420*scorllratio):0)/100):0
+            cxt1.scale(scaleword_t,scaleword_t);
+            drawImage(img3, 649, 1145, 186, 49, (57*ratio-(188*scaleword_t-188))/scaleword_t/ratio, (662*ratio-(73*scaleword_t-73))/scaleword_t/ratio);       //天梯左边第3行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_four= 1-(-currentDis>430*scorllratio ? -(currentDis+430*scorllratio):0)/100>0 ? (1-(-currentDis>430*scorllratio ? -(currentDis+430*scorllratio):0)/100):0
+            cxt1.scale(scaleword_four,scaleword_four);
+            drawImage(img3, 665, 1090, 187, 53, (57*ratio-(187*scaleword_four-187))/scaleword_four/ratio, (678*ratio-(53*scaleword_four-53))/scaleword_four/ratio);  //天梯左边第4行字
+            cxt1.restore()
+            
+            cxt1.save()
+            let scaleword_fif= 1-(-currentDis>440*scorllratio ? -(currentDis+440*scorllratio):0)/100>0 ? (1-(-currentDis>440*scorllratio ? -(currentDis+440*scorllratio):0)/100):0
+            cxt1.scale(scaleword_fif,scaleword_fif);
+            drawImage(img3, 296, 1191, 185, 47,(57*ratio-(185*scaleword_fif-185))/scaleword_fif/ratio, (698*ratio-(47*scaleword_fif-47))/scaleword_fif/ratio);       //天梯左边第5行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_six= 1-(-currentDis>450*scorllratio ? -(currentDis+450*scorllratio):0)/100>0 ? (1-(-currentDis>450*scorllratio ? -(currentDis+450*scorllratio):0)/100):0
+            cxt1.scale(scaleword_six,scaleword_six);
+            drawImage(img3, 610, 229, 185, 65, (57*ratio-(185*scaleword_six-185))/scaleword_six/ratio, (717*ratio-(65*scaleword_six-65))/scaleword_six/ratio);       //天梯左边第6行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_seven= 1-(-currentDis>460*scorllratio ? -(currentDis+460*scorllratio):0)/100>0 ? (1-(-currentDis>460*scorllratio ? -(currentDis+460*scorllratio):0)/100):0
+            cxt1.scale(scaleword_seven,scaleword_seven);
+            drawImage(img3, 790, 1200, 184, 37, (57*ratio-(184*scaleword_seven-184))/scaleword_seven/ratio, (745*ratio-(37*scaleword_seven-37))/scaleword_seven/ratio);      //天梯左边第7行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_eight= 1-(-currentDis>470*scorllratio ? -(currentDis+470*scorllratio):0)/100>0 ? (1-(-currentDis>470*scorllratio ? -(currentDis+470*scorllratio):0)/100):0
+            cxt1.scale(scaleword_eight,scaleword_eight);
+            drawImage(img3, 610, 1010, 182, 65, (57*ratio-(182*scaleword_eight-182))/scaleword_eight/ratio, (760*ratio-(65*scaleword_eight-65))/scaleword_eight/ratio);      //天梯左边第8行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_nine= 1-(-currentDis>480*scorllratio ? -(currentDis+480*scorllratio):0)/100>0 ? (1-(-currentDis>480*scorllratio ? -(currentDis+480*scorllratio):0)/100):0
+            cxt1.scale(scaleword_nine,scaleword_nine);
+            drawImage(img3, 482, 1078, 183, 61, (57*ratio-(183*scaleword_nine-183))/scaleword_nine/ratio, (786*ratio-(61*scaleword_nine-61))/scaleword_nine/ratio);       //天梯左边第9行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_ten= 1-(-currentDis>490*scorllratio ? -(currentDis+490*scorllratio):0)/100>0 ? (1-(-currentDis>490*scorllratio ? -(currentDis+490*scorllratio):0)/100):0
+            cxt1.scale(scaleword_ten,scaleword_ten);
+            drawImage(img3, 0, 1263, 113, 39, (75*ratio-(113*scaleword_ten-113))/scaleword_ten/ratio, (810*ratio-(39*scaleword_ten-39))/scaleword_ten/ratio);      //天梯左边第10行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_eleven= 1-(-currentDis>500*scorllratio ? -(currentDis+500*scorllratio):0)/100>0 ? (1-(-currentDis>500*scorllratio ? -(currentDis+500*scorllratio):0)/100):0
+            cxt1.scale(scaleword_eleven,scaleword_eleven);
+            drawImage(img3, 665, 1077, 37, 12, (90*ratio-(37*scaleword_eleven-37))/scaleword_eleven/ratio, (830*ratio-(12*scaleword_eleven-12))/scaleword_eleven/ratio);        //天梯左边第11行字
+            cxt1.restore()
+            /************************************************************天梯左边字**********************************************************************************************/
+
+            /************************************************************天梯右边字**********************************************************************************************/
+            cxt1.save()
+            let scaleword_one_right= 1-(-currentDis>1062*scorllratio ? -(currentDis+1062*scorllratio):0)/100>0 ? (1-(-currentDis>1062*scorllratio ? -(currentDis+1062*scorllratio):0)/100):0
+            cxt1.scale(scaleword_one_right,scaleword_one_right);
+            // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_one_right-162))/scaleword_one_right/ratio, (860*ratio-(69*scaleword_one_right-69))/scaleword_one_right/ratio);        //天梯左边第11行字
+            drawImage(img3, 794, 1020, 162, 69, (235/scaleword_one_right), (850/scaleword_one_right));        //天梯右边第1行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_two_right= 1-(-currentDis>1072*scorllratio ? -(currentDis+1072*scorllratio):0)/100>0 ? (1-(-currentDis>1072*scorllratio ? -(currentDis+1072*scorllratio):0)/100):0
+            cxt1.scale(scaleword_two_right,scaleword_two_right);
+            // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_two_right-162))/scaleword_two_right/ratio, (860*ratio-(69*scaleword_two_right-69))/scaleword_two_right/ratio);        //天梯左边第11行字
+            drawImage(img3, 486, 1140, 162, 53, (235/scaleword_two_right), (882/scaleword_two_right));        //天梯右边第2行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_three_right= 1-(-currentDis>1082*scorllratio ? -(currentDis+1082*scorllratio):0)/100>0 ? (1-(-currentDis>1082*scorllratio ? -(currentDis+1082*scorllratio):0)/100):0
+            cxt1.scale(scaleword_three_right,scaleword_three_right);
+            // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_three_right-162))/scaleword_three_right/ratio, (860*ratio-(69*scaleword_three_right-69))/scaleword_three_right/ratio);        //天梯左边第11行字
+            drawImage(img3, 790, 1239, 162, 38, (235/scaleword_three_right), (908/scaleword_three_right));        //天梯右边第3行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_four_right= 1-(-currentDis>1092*scorllratio ? -(currentDis+1092*scorllratio):0)/100>0 ? (1-(-currentDis>1092*scorllratio ? -(currentDis+1092*scorllratio):0)/100):0
+            cxt1.scale(scaleword_four_right,scaleword_four_right);
+            // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_four_right-162))/scaleword_four_right/ratio, (860*ratio-(69*scaleword_four_right-69))/scaleword_four_right/ratio);        //天梯左边第11行字
+            drawImage(img3, 439, 1249, 161, 32, (235/scaleword_four_right), (922/scaleword_four_right));        //天梯右边第4行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_fifth_right= 1-(-currentDis>1102*scorllratio ? -(currentDis+1102*scorllratio):0)/100>0 ? (1-(-currentDis>1102*scorllratio ? -(currentDis+1102*scorllratio):0)/100):0
+            cxt1.scale(scaleword_fifth_right,scaleword_fifth_right);
+            // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_fifth_right-162))/scaleword_fifth_right/ratio, (860*ratio-(69*scaleword_fifth_right-69))/scaleword_fifth_right/ratio);        //天梯左边第11行字
+            drawImage(img3, 853, 1092, 158, 57, (235/scaleword_fifth_right), (935/scaleword_fifth_right));        //天梯右边第5行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_six_right= 1-(-currentDis>1112*scorllratio ? -(currentDis+1112*scorllratio):0)/100>0 ? (1-(-currentDis>1112*scorllratio ? -(currentDis+1112*scorllratio):0)/100):0
+            cxt1.scale(scaleword_six_right,scaleword_six_right);
+            // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_six_right-162))/scaleword_six_right/ratio, (860*ratio-(69*scaleword_six_right-69))/scaleword_six_right/ratio);        //天梯左边第11行字
+            drawImage(img3, 281, 1239, 158, 44, (235/scaleword_six_right), (956/scaleword_six_right));        //天梯右边第6行字
+            cxt1.restore()
+            
+            cxt1.save()
+            let scaleword_seven_right= 1-(-currentDis>1132*scorllratio ? -(currentDis+1132*scorllratio):0)/100>0 ? (1-(-currentDis>1132*scorllratio ? -(currentDis+1132*scorllratio):0)/100):0
+            cxt1.scale(scaleword_seven_right,scaleword_seven_right);
+            // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_seven_right-162))/scaleword_seven_right/ratio, (860*ratio-(69*scaleword_seven_right-69))/scaleword_seven_right/ratio);        //天梯左边第11行字
+            drawImage(img3, 836, 1151, 159, 47, (235/scaleword_seven_right), (970/scaleword_seven_right));        //天梯右边第7行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_eight_right= 1-(-currentDis>1152*scorllratio ? -(currentDis+1152*scorllratio):0)/100>0 ? (1-(-currentDis>1152*scorllratio ? -(currentDis+1152*scorllratio):0)/100):0
+            cxt1.scale(scaleword_eight_right,scaleword_eight_right);
+            // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_eight_right-162))/scaleword_eight_right/ratio, (860*ratio-(69*scaleword_eight_right-69))/scaleword_eight_right/ratio);        //天梯左边第11行字
+            drawImage(img3, 323, 1068, 158, 70, (235/scaleword_eight_right), (984/scaleword_eight_right));        //天梯右边第8行字
+            cxt1.restore()
+
+            cxt1.save()
+            let scaleword_nine_right= 1-(-currentDis>1162*scorllratio ? -(currentDis+1162*scorllratio):0)/100>0 ? (1-(-currentDis>1162*scorllratio ? -(currentDis+1162*scorllratio):0)/100):0
+            cxt1.scale(scaleword_nine_right,scaleword_nine_right);
+            // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_nine_right-162))/scaleword_nine_right/ratio, (860*ratio-(69*scaleword_nine_right-69))/scaleword_nine_right/ratio);        //天梯左边第11行字
+            drawImage(img3, 140, 1130, 155, 67, (235/scaleword_nine_right), (1004/scaleword_nine_right));        //天梯右边第9行字
+            cxt1.restore()
+
+            /************************************************************天梯右边字**********************************************************************************************/
+
+
+
+
+
+
+            cxt1.save()
+            drawImage(topMusic, 1846, 650, 156, 160, 0+currentDis/ratio, 0, 78, 80); //顶部置顶
+            drawImage(topMusic, 1846, 477, 156, 160, 298-currentDis/ratio, 0, 78, 80);//顶部置顶音乐
+            cxt1.restore()
+            // cxt1.save()
+            // drawImage(topMusic, 0, 1280, 326, 263, -165-currentDis/ratio, ch-131.5, 163, 131.5); //底部进入官网
+            // drawImage(topMusic, 1471, 982, 326, 263, 375+currentDis/ratio, ch-131.5, 163, 131.5);//底部再看一遍
+            // cxt1.restore()
+        }
+        function drawImage(img, imgx, imgy, imgw, imgh, canvasx, canvasy) {
+            cxt1.drawImage(img, imgx, imgy, imgw, imgh, canvasx * ratio * widthratio, canvasy * ratio * widthratio, (imgw * ratio * widthratio) / 2, (imgh * ratio * widthratio) / 2);
+        }
+        var timer;
+        var timer2;
+        function topMusicPaint() { }
+        topMusicPaint.prototype = {
+            init: function () {
+                this.translateLeft = 0;
+                this.translateRight = cw * ratio - 78 * ratio * widthratio;
+            },
+            draw: function () {
+                // cxt1.globalCompositeOperation="source-over";
+                // cxt1.beginPath();
+                cxt1.save();
+                cxt1.translate(this.translateLeft, 0)
+                cxt1.drawImage(topMusic, 1846, 650, 156, 160, 0, 0, 78 * ratio * widthratio, 80 * ratio * widthratio);
+                cxt1.restore();
+
+                // cxt1.beginPath();
+                cxt1.save();
+                cxt1.translate(this.translateRight, 0)
+                cxt1.drawImage(topMusic, 1846, 477, 156, 160, 0, 0, 78 * ratio * widthratio, 80 * ratio * widthratio);
+                cxt1.restore();
+            },
+            moveShow: function () {
+                this.translateLeft += 10;
+                if (this.translateLeft >= 0) {
+                    this.translateLeft = 0;
+                    clearInterval(timer2)
+                }
+                this.translateRight -= 10;
+                if (this.translateRight <= cw * ratio - 78 * ratio * widthratio) {
+                    this.translateRight = cw * ratio - 78 * ratio * widthratio;;
+                    clearInterval(timer2)
+                    console.log(this.translateLeft, this.translateRight, cw * widthratio, "左出现位置：-", 0, "右出现位置：", cw * ratio - 78 * ratio * widthratio)
+                }
+                // cxt1.clearRect(this.translateRight, 0, 78 * ratio * widthratio, 80 * ratio * widthratio);
+                // cxt1.clearRect(this.translateLeft, 0, 78 * ratio * widthratio, 80 * ratio * widthratio);
+                // this.draw()
+            },
+            moveHide: function () {
+                this.translateLeft -= 10;
+                console.log(this.translateLeft, this.translateRight, cw * widthratio, "左消失位置：-", 78 * ratio * widthratio, "右消失位置：", cw * ratio, ratio)
+                if (-this.translateLeft >= 78 * ratio * widthratio) {
+                    this.translateLeft = -78 * ratio * widthratio;
+                    clearInterval(timer)
+                }
+                this.translateRight += 10;
+                if (this.translateRight >= cw * ratio) {
+                    this.translateRight = cw * ratio;
+                    clearInterval(timer)
+                }
+                // this.draw()
+            },
+        }
+        function resizeCanvas(width, height) {
+            cxt1.clearRect(0, 0, canvas1.width, canvas1.height);
+            $('#canvas').attr('width', width);
+            $('#canvas').attr('height', height);
+        }
+        $(window).resize(function () {
+            console.log(canvas1.height)
+            cxt1.clearRect(0, 0, canvas1.width, canvas1.height);
+            bg(0)
+            drawImg()
+        })
+    }
+</script>
+
+</html>

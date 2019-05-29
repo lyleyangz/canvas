@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CANVAS</title>
+    <script src="./js/jquery.js"></script>
+    <style>
+        .bg{
+            background: url("./img/3.png") no-repeat;
+            background-size: 100% 100%;
+            width: 100%;
+            height: 2400px;
+            /* position: relative; */
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+        }
+        .outSide{
+            /* position: absolute; */
+            position: relative;
+            box-sizing: border-box;
+        }
+        .top{
+            background: url("./img/3.jpg") no-repeat;
+            background-size: 100% 100%;
+            width: 80%;
+            margin: auto;
+            display: flex;
+            /* justify-content: center; */
+            /* align-items: center; */
+            height: 400px;
+            box-sizing: border-box;
+        }
+        .mid{
+            background: url("./img/3.jpg") no-repeat;
+            background-size: 100% 100%;
+            width: 80%;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 800px;
+            box-sizing: border-box;
+        }
+        .bottom{
+            background: url("./img/3.jpg") no-repeat;
+            background-size: 100% 100%;
+            width: 100%;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 800px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg"></div>
+    <div class="outSide">
+        <div class="mid">
+            <canvas id="canvas2"></canvas>
+            <img src="./img/1.png" id="img" style="display:none"/>  <!--正确路径-->
+        </div>
+        <div class="top">
+            <canvas id="canvas1" width="400" height="400"></canvas>
+        </div>
+        <div class="bottom">
+            <canvas id="canvas3" width="800" height="800"></canvas>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+// 1.准备画布
+// 2.选择画笔
+// 3.选择颜料
+// 4.画出轮廓
+// 5.填充颜色
+var canvas1 = document.getElementById('canvas1');
+var cxt1 = canvas1.getContext('2d');
+var canvas2 = document.getElementById('canvas2');
+var canvas3 = document.getElementById('canvas3');
+var cxt3 = canvas3.getContext('2d');
+var Img = new Image();
+var creatBalls = []
+var cacheCanvas;
+$(document).ready(function(){
+    var create = new createImg();
+    
+	// canvas1Fun();
+    Img.src = "./img/bg.jpg";
+    create.init()
+    Img.onload = create.drawImg();
+    for(let i=0;i<100;i++){
+        var balls = new ball();
+        balls.create();
+        balls.draw();
+        creatBalls.push(balls)
+    }
+    setInterval(()=>{
+        cxt3.clearRect(0,0,canvas3.width,canvas3.height)
+        for(var b of creatBalls){
+            // console.log(b)
+            b.move()
+        }
+    },1000/60)
+    window.addEventListener("scroll",function(){
+    console.log("滚动的高度：",$(document).scrollTop(),"可视文档高度：",$(window).height(),"文档的高度：",$(document.body).height(),"物理设备高度：",window.outerWidth)
+    // if($(document).scrollTop()%20 ==0){
+            create.move()
+    // }
+})
+})
+function canvas1Fun(){
+
+}
+function canvas2Fun(Percent,r){
+    var cxt = canvas2.getContext('2d');
+    var x = 350*Math.cos(Percent);
+    var y = 350*Math.sin(Percent);
+    cxt.beginPath();
+    cxt.fillStyle="red";
+    cxt.arc(x,y,r,0,Math.PI*2);
+    cxt.fill();
+}
+function canvas3Fun(){
+    var cxt = canvas3.getContext('2d');
+    cxt.lineWidth = 5;                              //选择画笔
+    cxt.strokeStyle = "green";                        //选择颜料
+    cxt.moveTo(10,10);                              //...
+    cxt.lineTo(150,50);                             //...
+    cxt.lineTo(10,50);                              //画出轮廓
+    cxt.stroke(); 
+}
+
+
+function createImg(){}
+createImg.prototype={
+    init:function(width,height){
+        this.width = width;
+        this.height = height;
+        this.rotate = 0;
+    },
+    drawImg:function(){
+        cacheCanvas = document.createElement("canvas");
+        var cacheCanvascxt = cacheCanvas.getContext('2d');
+        cacheCanvas.width = canvas1.width;
+        cacheCanvas.height = canvas1.height;
+        cacheCanvascxt.drawImage(Img,0, 0,400,400);
+        cxt1.save();
+        cxt1.clearRect(0,0,canvas1.width,canvas1.height);
+        // cxt1.beginPath();
+        // cxt1.rotate(this.rotate);
+        cxt1.translate(this.rotate,0)
+        cxt1.drawImage(Img,0, 0,400,400);
+        cxt1.restore();
+    },
+    move:function(){
+        this.rotate +=  1;
+        if(this.rotate>90){
+            this.rotate -=1;
+        }
+        this.drawImg()
+    }
+
+}
+const randomInt = (min, max) => {return Math.floor(Math.random() * (max - min) + min)};
+var colorArr=["#00BFFF","#778899","#BA55D3","#C71585","#7FFF00","#F5DEB3","#CD853F","#B22222","#7CFC00","#48D1CC"];
+
+function ball(){}
+ball.prototype={
+    create:function(){
+        this.x=randomInt(0,800);
+        this.y=randomInt(0,800);
+        this.r = randomInt(0,10);
+        this.color= colorArr[randomInt(0,10)];
+        this.posX = randomInt(-1,1);
+        this.posY = randomInt(-1,1);
+    },
+    draw:function(){
+        cxt3.beginPath();
+        cxt3.fillStyle=this.color;
+        // console.log(this.x,this.y)
+        cxt3.arc(this.x,this.y,this.r,0,Math.PI*2);
+        cxt3.fill()
+    },
+    move:function(){
+        this.x += this.posX;
+        this.y += this.posY;
+        if(this.x-this.r<0||this.x+this.r>800){
+            this.posX = -this.posX; 
+        }
+        if(this.y-this.r<0||this.y+this.r>800){
+            this.posY = -this.posY; 
+        }
+        this.draw()
+    }
+}
+function act1(Img,x){
+    var cxt = canvas1.getContext('2d');
+    cxt.clearRect(0,0,canvas1.width,canvas1.height);
+    cxt.rotate(Math.PI/6)
+    cxt.drawImage(Img,x, 0,200,200);
+    // window.requestAnimationFrame(act1);
+}
+
+var Percent = Math.PI;
+function act3(){
+    Percent +=Math.PI/90;
+    var cxt = canvas2.getContext('2d');
+    // cxt.clearRect(0,0,canvas2.width,canvas2.height);
+    canvas2Fun(Percent,10);
+    window.requestAnimationFrame(act3);
+}
+</script>
+</html>
