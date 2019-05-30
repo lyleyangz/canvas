@@ -63,7 +63,6 @@
         bg_four.src = "./img/bg_4.jpg";
         
         bg_four.onload = function () {
-            bg(0);
             setTimeout(function () {
                 drawImg()
             }, 500);
@@ -93,20 +92,6 @@
             }
             return parameter
         }
-        function bg(Y){
-            var imgW = BG(1).width;
-            var imgH = BG(1).height;
-            resizeCanvas(cw * ratio, ch * ratio);
-            totalHeight = (cw * imgH * ratio / imgW) + (cw *  BG(2).height * ratio /  BG(2).width) + (cw *  BG(3).height * ratio /  BG(3).width) + (cw *  BG(4).height * ratio /  BG(4).width);
-            cxt1.translate(0,Y);
-            cxt1.save()
-            cxt1.drawImage(bg_first, 0, 0, cw * ratio, cw * imgH * ratio / imgW);
-            cxt1.drawImage(bg_second, 0,(cw * imgH * ratio / imgW), cw * ratio, cw *  BG(2).height * ratio /  BG(2).width);  //第二章背景图
-            cxt1.drawImage(bg_third, 0,(cw * imgH * ratio / imgW) + (cw *  BG(2).height * ratio /  BG(2).width), cw * ratio, cw *  BG(3).height * ratio /  BG(3).width);  //第3章背景图
-            cxt1.drawImage(bg_four,  0,(cw * imgH * ratio / imgW) + (cw *  BG(2).height * ratio /  BG(2).width) + (cw *  BG(3).height * ratio /  BG(3).width), cw * ratio, cw *  BG(4).height * ratio /  BG(4).width);  //第4章背景图 
-
-            cxt1.restore()
-        }
         window.addEventListener('touchstart', e => {
             var touch = event.changedTouches[0];
             startY = touch.pageY;
@@ -128,15 +113,40 @@
             if(-currentDis<=0){
                 currentDis = 0;
             }
-            bg(currentDis);
-            console.log(currentDis)
+            // console.log(currentDis)
             drawImg()
         }, { passive: false });
-        window.addEventListener('touchend', e => {
-            var touch = e.changedTouches[0];
-        }, { passive: false });
-
+        // window.addEventListener('touchend', e => {
+        //     var touch = e.changedTouches[0];
+        // }, { passive: false });
+        // 缩放比例
+        function distanceScoll(dis){
+            return 1-(-currentDis>dis*scorllratio ? -(currentDis+dis*scorllratio):0)/100>0 ? (1-(-currentDis>dis*scorllratio ? -(currentDis+dis*scorllratio):0)/100):0
+        }
+        // 位移
+        function cloudsDistance(dis,speed){
+            return -currentDis>dis*scorllratio ? (currentDis+dis*scorllratio)*speed:0;
+        }
+        // 缩放中心
+        function scalePosition(attr,pos,scale,ratioFlag){
+            if(ratioFlag){
+                return (pos*ratio-(attr*ratioFlag*scale-attr*ratioFlag))/scale/ratio
+            }else{
+                return (pos*ratio-(attr*scale-attr))/scale/ratio
+            }
+        }
         function drawImg() {
+            var imgW = BG(1).width;
+            var imgH = BG(1).height;
+            resizeCanvas(cw * ratio, ch * ratio);
+            totalHeight = (cw * imgH * ratio / imgW) + (cw *  BG(2).height * ratio /  BG(2).width) + (cw *  BG(3).height * ratio /  BG(3).width) + (cw *  BG(4).height * ratio /  BG(4).width);
+            cxt1.translate(0,currentDis);
+            cxt1.save()
+            cxt1.drawImage(bg_first, 0, 0, cw * ratio, cw * imgH * ratio / imgW);
+            cxt1.drawImage(bg_second, 0,(cw * imgH * ratio / imgW), cw * ratio, cw *  BG(2).height * ratio /  BG(2).width);  //第二章背景图
+            cxt1.drawImage(bg_third, 0,(cw * imgH * ratio / imgW) + (cw *  BG(2).height * ratio /  BG(2).width), cw * ratio, cw *  BG(3).height * ratio /  BG(3).width);  //第3章背景图
+            cxt1.drawImage(bg_four,  0,(cw * imgH * ratio / imgW) + (cw *  BG(2).height * ratio /  BG(2).width) + (cw *  BG(3).height * ratio /  BG(3).width), cw * ratio, cw *  BG(4).height * ratio /  BG(4).width);  //第4章背景图 
+            cxt1.restore()
 
             drawImage(img2, 997, 1407, 368, 284, 0, 29.5);       //左侧第一个图
             drawImage(img3, 620, 0, 204, 230, 273, 27);         //右侧第一个图
@@ -159,170 +169,275 @@
             drawImage(img4, 752, 0, 270, 1580, 119.5, 620.3);     //天梯
             
             cxt1.save()
-            let hozzL_one = -currentDis>400*scorllratio ? (currentDis+400*scorllratio):0;
+            let hozzL_one = cloudsDistance(400,1);
             cxt1.translate(hozzL_one,0)
             drawImage(img2, 1084, 1693,344, 216,0,620,172, 108);     //天梯左边第一层云朵
             cxt1.restore()
 
             cxt1.save()
-            let hozzR_one = -currentDis>390*scorllratio ? -(currentDis+390*scorllratio)*3:0;
-            cxt1.translate(hozzR_one,0)
+            let hozzR_one = cloudsDistance(390,3);
+            cxt1.translate(-hozzR_one,0)
             drawImage(img2, 718, 1693,364, 202,192,620,182, 101);     //天梯右边第一层云朵
             cxt1.restore()
 
             cxt1.save()
-            let hozzR_two = -currentDis>470*scorllratio ? -(currentDis+470*scorllratio)*3:0;
-            cxt1.translate(hozzR_two,0)
-            drawImage(img3, 0, 876,193, 100,278,760);     //天梯左边第2层云朵
+            let hozzR_two = cloudsDistance(470,2);
+            cxt1.translate(-hozzR_two,0)
+            drawImage(img3, 0, 876,193, 100,278,760);     //天梯右边第2层云朵
             cxt1.restore()
 
             cxt1.save()
-            let hozzL_two = -currentDis>485*scorllratio ? (currentDis+485*scorllratio):0;
+            let hozzL_two = cloudsDistance(928,1);
             cxt1.translate(hozzL_two,0)
-            drawImage(img3, 899, 303,119, 100,0,760);     //天梯右边第2层云朵
+            drawImage(img3, 899, 303,119, 100,0,760);     //天梯左边第2层云朵
             cxt1.restore()
 
             cxt1.save()
-            let hozzL_three = -currentDis>510*scorllratio ? (currentDis+510*scorllratio):0;
+            let hozzL_three = cloudsDistance(1000,1);
             cxt1.translate(hozzL_three,0)
-            drawImage(img3, 330, 101,281, 86,20,836);     //天梯左边第3层云朵
+            drawImage(img3, 330, 101,281, 86,20,816);     //天梯左边第3层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzL_four = cloudsDistance(1162,1);
+            cxt1.translate(hozzL_four,0)
+            drawImage(img3, 809, 436,197, 166,0,826);     //天梯左边第4层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzR_four = cloudsDistance(1240,1);
+            cxt1.translate(-hozzR_four,0)
+            drawImage(img3, 0, 721,206, 152,278,856);     //天梯右边第4层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzR_three = cloudsDistance(1150,2.3);
+            cxt1.translate(-hozzR_three,0)
+            drawImage(img2, 1370, 1238,405, 273,178,756);     //天梯右边第3层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzL_fifth = cloudsDistance(1435,1);
+            cxt1.translate(hozzL_fifth,0)
+            drawImage(img3, 585, 622,276, 116,0,900);     //天梯左边第5层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzR_fifth = cloudsDistance(1522,1);
+            cxt1.translate(-hozzR_fifth,0)
+            drawImage(img3, 0, 480,296, 138,227,896);     //天梯右边第5层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzL_six = cloudsDistance(1634,2.4);
+            cxt1.translate(hozzL_six,0)
+            drawImage(img2, 1428, 917,421, 317,0,926);     //天梯左边第6层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzR_six = cloudsDistance(1716,0.85);
+            cxt1.translate(-hozzR_six,0)
+            drawImage(img3, 303, 190,150, 303,301,945);     //天梯右边第6层云朵
+            cxt1.restore()
+
+            cxt1.save()
+            let hozzL_seven = cloudsDistance(1836,1);
+            cxt1.translate(hozzL_seven,0)
+            drawImage(img3, 450, 933,234, 70,59,1070);     //天梯中间上面第7层云朵
             cxt1.restore()
             
 
-
-            /************************************************************天梯左边字**********************************************************************************************/
             cxt1.save()
-            let scaleword= 1-(-currentDis>400*scorllratio ? -(currentDis+400*scorllratio):0)/100>0 ? (1-(-currentDis>400*scorllratio ? -(currentDis+400*scorllratio):0)/100):0
+            let hozzL_eight = cloudsDistance(2134,1);
+            cxt1.translate(hozzL_eight,0)
+            drawImage(img2, 0, 1695,337, 309,0,1120);     //天梯第三层文字下的云朵(你可能)
+            cxt1.restore()
+
+
+            /************************************************************天梯一左边字**********************************************************************************************/
+            cxt1.save()
+            let scaleword= distanceScoll(723);
             cxt1.scale(scaleword,scaleword);
-            drawImage(img3, 297, 1138, 188, 50, (57*ratio-(188*scaleword-188))/scaleword/ratio, (620*ratio-(50*scaleword-50))/scaleword/ratio);        //天梯左边第1行字
+            console.log(scalePosition(188,57,scaleword,scorllratio))
+            // drawImage(img3, 297, 1138, 188, 50, (57*ratio-(188*scorllratio*scaleword-188*scorllratio))/scaleword/ratio, (620*ratio-(50*scaleword-50))/scaleword/ratio);        //天梯左边第1行字
+            drawImage(img3, 297, 1138, 188, 50, scalePosition(188,57,scaleword,scorllratio),scalePosition(50,620,scaleword,false));        //天梯左边第1行字
             cxt1.restore()
             
             cxt1.save()
-            let scaleword_s= 1-(-currentDis>410*scorllratio ? -(currentDis+410*scorllratio):0)/100>0 ? (1-(-currentDis>410*scorllratio ? -(currentDis+410*scorllratio):0)/100):0;
+            let scaleword_s= distanceScoll(757);
             cxt1.scale(scaleword_s,scaleword_s);
-            drawImage(img3, 134, 1057, 188, 73, (57*ratio-(188*scaleword_s-188))/scaleword_s/ratio, (635*ratio-(73*scaleword_s-73))/scaleword_s/ratio);       //天梯左边第2行字
+            // drawImage(img3, 134, 1057, 188, 73, (57*ratio-(188*scaleword_s-188))/scaleword_s/ratio, (635*ratio-(73*scaleword_s-73))/scaleword_s/ratio);       //天梯左边第2行字
+            drawImage(img3, 134, 1057, 188, 73, scalePosition(188,57,scaleword_s,scorllratio),scalePosition(73,635,scaleword_s,false));       //天梯左边第2行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_t= 1-(-currentDis>420*scorllratio ? -(currentDis+420*scorllratio):0)/100>0 ? (1-(-currentDis>420*scorllratio ? -(currentDis+420*scorllratio):0)/100):0
+            let scaleword_t= distanceScoll(771);
             cxt1.scale(scaleword_t,scaleword_t);
-            drawImage(img3, 649, 1145, 186, 49, (57*ratio-(188*scaleword_t-188))/scaleword_t/ratio, (662*ratio-(73*scaleword_t-73))/scaleword_t/ratio);       //天梯左边第3行字
+            // drawImage(img3, 649, 1145, 186, 49, (57*ratio-(188*scaleword_t-188))/scaleword_t/ratio, (662*ratio-(73*scaleword_t-73))/scaleword_t/ratio);       //天梯左边第3行字
+            drawImage(img3, 649, 1145, 186, 49, scalePosition(188,57,scaleword_t,scorllratio),scalePosition(73,662,scaleword_t,false));       //天梯左边第3行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_four= 1-(-currentDis>430*scorllratio ? -(currentDis+430*scorllratio):0)/100>0 ? (1-(-currentDis>430*scorllratio ? -(currentDis+430*scorllratio):0)/100):0
+            let scaleword_four= distanceScoll(800);
             cxt1.scale(scaleword_four,scaleword_four);
-            drawImage(img3, 665, 1090, 187, 53, (57*ratio-(187*scaleword_four-187))/scaleword_four/ratio, (678*ratio-(53*scaleword_four-53))/scaleword_four/ratio);  //天梯左边第4行字
+            // drawImage(img3, 665, 1090, 187, 53, (57*ratio-(187*scaleword_four-187))/scaleword_four/ratio, (678*ratio-(53*scaleword_four-53))/scaleword_four/ratio);  //天梯左边第4行字
+            drawImage(img3, 665, 1090, 187, 53, scalePosition(187,57,scaleword_four,scorllratio),scalePosition(53,678,scaleword_four,false));  //天梯左边第4行字
             cxt1.restore()
             
             cxt1.save()
-            let scaleword_fif= 1-(-currentDis>440*scorllratio ? -(currentDis+440*scorllratio):0)/100>0 ? (1-(-currentDis>440*scorllratio ? -(currentDis+440*scorllratio):0)/100):0
+            let scaleword_fif= distanceScoll(814);
             cxt1.scale(scaleword_fif,scaleword_fif);
-            drawImage(img3, 296, 1191, 185, 47,(57*ratio-(185*scaleword_fif-185))/scaleword_fif/ratio, (698*ratio-(47*scaleword_fif-47))/scaleword_fif/ratio);       //天梯左边第5行字
+            // drawImage(img3, 296, 1191, 185, 47,(57*ratio-(185*scaleword_fif-185))/scaleword_fif/ratio, (698*ratio-(47*scaleword_fif-47))/scaleword_fif/ratio);       //天梯左边第5行字
+            drawImage(img3, 296, 1191, 185, 47,scalePosition(185,57,scaleword_fif,scorllratio),scalePosition(47,698,scaleword_fif,false));       //天梯左边第5行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_six= 1-(-currentDis>450*scorllratio ? -(currentDis+450*scorllratio):0)/100>0 ? (1-(-currentDis>450*scorllratio ? -(currentDis+450*scorllratio):0)/100):0
+            let scaleword_six= distanceScoll(848);
             cxt1.scale(scaleword_six,scaleword_six);
-            drawImage(img3, 610, 229, 185, 65, (57*ratio-(185*scaleword_six-185))/scaleword_six/ratio, (717*ratio-(65*scaleword_six-65))/scaleword_six/ratio);       //天梯左边第6行字
+            // drawImage(img3, 610, 229, 185, 65, (57*ratio-(185*scaleword_six-185))/scaleword_six/ratio, (717*ratio-(65*scaleword_six-65))/scaleword_six/ratio);       //天梯左边第6行字
+            drawImage(img3, 610, 229, 185, 65, scalePosition(185,57,scaleword_six,scorllratio),scalePosition(65,717,scaleword_six,false));       //天梯左边第6行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_seven= 1-(-currentDis>460*scorllratio ? -(currentDis+460*scorllratio):0)/100>0 ? (1-(-currentDis>460*scorllratio ? -(currentDis+460*scorllratio):0)/100):0
+            let scaleword_seven= distanceScoll(862);
             cxt1.scale(scaleword_seven,scaleword_seven);
-            drawImage(img3, 790, 1200, 184, 37, (57*ratio-(184*scaleword_seven-184))/scaleword_seven/ratio, (745*ratio-(37*scaleword_seven-37))/scaleword_seven/ratio);      //天梯左边第7行字
+            // drawImage(img3, 790, 1200, 184, 37, (57*ratio-(184*scaleword_seven-184))/scaleword_seven/ratio, (745*ratio-(37*scaleword_seven-37))/scaleword_seven/ratio);      //天梯左边第7行字
+            drawImage(img3, 790, 1200, 184, 37, scalePosition(184,57,scaleword_seven,scorllratio),scalePosition(37,745,scaleword_seven,false));      //天梯左边第7行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_eight= 1-(-currentDis>470*scorllratio ? -(currentDis+470*scorllratio):0)/100>0 ? (1-(-currentDis>470*scorllratio ? -(currentDis+470*scorllratio):0)/100):0
+            let scaleword_eight= distanceScoll(896);
             cxt1.scale(scaleword_eight,scaleword_eight);
-            drawImage(img3, 610, 1010, 182, 65, (57*ratio-(182*scaleword_eight-182))/scaleword_eight/ratio, (760*ratio-(65*scaleword_eight-65))/scaleword_eight/ratio);      //天梯左边第8行字
+            // drawImage(img3, 610, 1010, 182, 65, (57*ratio-(182*scaleword_eight-182))/scaleword_eight/ratio, (760*ratio-(65*scaleword_eight-65))/scaleword_eight/ratio);      //天梯左边第8行字
+            drawImage(img3, 610, 1010, 182, 65, scalePosition(182,57,scaleword_eight,scorllratio),scalePosition(65,760,scaleword_eight,false));      //天梯左边第8行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_nine= 1-(-currentDis>480*scorllratio ? -(currentDis+480*scorllratio):0)/100>0 ? (1-(-currentDis>480*scorllratio ? -(currentDis+480*scorllratio):0)/100):0
+            let scaleword_nine= distanceScoll(930);
             cxt1.scale(scaleword_nine,scaleword_nine);
-            drawImage(img3, 482, 1078, 183, 61, (57*ratio-(183*scaleword_nine-183))/scaleword_nine/ratio, (786*ratio-(61*scaleword_nine-61))/scaleword_nine/ratio);       //天梯左边第9行字
+            // drawImage(img3, 482, 1078, 183, 61, (57*ratio-(183*scaleword_nine-183))/scaleword_nine/ratio, (786*ratio-(61*scaleword_nine-61))/scaleword_nine/ratio);       //天梯左边第9行字
+            drawImage(img3, 482, 1078, 183, 61, scalePosition(183,57,scaleword_nine,scorllratio),scalePosition(61,786,scaleword_nine,false));       //天梯左边第9行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_ten= 1-(-currentDis>490*scorllratio ? -(currentDis+490*scorllratio):0)/100>0 ? (1-(-currentDis>490*scorllratio ? -(currentDis+490*scorllratio):0)/100):0
+            let scaleword_ten= distanceScoll(944);
             cxt1.scale(scaleword_ten,scaleword_ten);
-            drawImage(img3, 0, 1263, 113, 39, (75*ratio-(113*scaleword_ten-113))/scaleword_ten/ratio, (810*ratio-(39*scaleword_ten-39))/scaleword_ten/ratio);      //天梯左边第10行字
+            // drawImage(img3, 0, 1263, 113, 39, (75*ratio-(113*scaleword_ten-113))/scaleword_ten/ratio, (810*ratio-(39*scaleword_ten-39))/scaleword_ten/ratio);      //天梯左边第10行字
+            drawImage(img3, 0, 1263, 113, 39, scalePosition(113,75,scaleword_ten,scorllratio),scalePosition(39,810,scaleword_ten,false));      //天梯左边第10行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_eleven= 1-(-currentDis>500*scorllratio ? -(currentDis+500*scorllratio):0)/100>0 ? (1-(-currentDis>500*scorllratio ? -(currentDis+500*scorllratio):0)/100):0
+            let scaleword_eleven= distanceScoll(958);
             cxt1.scale(scaleword_eleven,scaleword_eleven);
-            drawImage(img3, 665, 1077, 37, 12, (90*ratio-(37*scaleword_eleven-37))/scaleword_eleven/ratio, (830*ratio-(12*scaleword_eleven-12))/scaleword_eleven/ratio);        //天梯左边第11行字
+            // drawImage(img3, 665, 1077, 37, 12, (90*ratio-(37*scaleword_eleven-37))/scaleword_eleven/ratio, (830*ratio-(12*scaleword_eleven-12))/scaleword_eleven/ratio);        //天梯左边第11行字
+            drawImage(img3, 665, 1077, 37, 12,  scalePosition(37,90,scaleword_eleven,scorllratio),scalePosition(12,830,scaleword_eleven,false));        //天梯左边第11行字
             cxt1.restore()
-            /************************************************************天梯左边字**********************************************************************************************/
+            /************************************************************天梯一左边字**********************************************************************************************/
 
-            /************************************************************天梯右边字**********************************************************************************************/
+            /************************************************************天梯二右边字**********************************************************************************************/
             cxt1.save()
-            let scaleword_one_right= 1-(-currentDis>1062*scorllratio ? -(currentDis+1062*scorllratio):0)/100>0 ? (1-(-currentDis>1062*scorllratio ? -(currentDis+1062*scorllratio):0)/100):0
+            let scaleword_one_right= distanceScoll(1062);
             cxt1.scale(scaleword_one_right,scaleword_one_right);
             // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_one_right-162))/scaleword_one_right/ratio, (860*ratio-(69*scaleword_one_right-69))/scaleword_one_right/ratio);        //天梯左边第11行字
             drawImage(img3, 794, 1020, 162, 69, (235/scaleword_one_right), (850/scaleword_one_right));        //天梯右边第1行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_two_right= 1-(-currentDis>1072*scorllratio ? -(currentDis+1072*scorllratio):0)/100>0 ? (1-(-currentDis>1072*scorllratio ? -(currentDis+1072*scorllratio):0)/100):0
+            let scaleword_two_right= distanceScoll(1072);
             cxt1.scale(scaleword_two_right,scaleword_two_right);
             // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_two_right-162))/scaleword_two_right/ratio, (860*ratio-(69*scaleword_two_right-69))/scaleword_two_right/ratio);        //天梯左边第11行字
             drawImage(img3, 486, 1140, 162, 53, (235/scaleword_two_right), (882/scaleword_two_right));        //天梯右边第2行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_three_right= 1-(-currentDis>1082*scorllratio ? -(currentDis+1082*scorllratio):0)/100>0 ? (1-(-currentDis>1082*scorllratio ? -(currentDis+1082*scorllratio):0)/100):0
+            let scaleword_three_right= distanceScoll(1082);
             cxt1.scale(scaleword_three_right,scaleword_three_right);
             // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_three_right-162))/scaleword_three_right/ratio, (860*ratio-(69*scaleword_three_right-69))/scaleword_three_right/ratio);        //天梯左边第11行字
             drawImage(img3, 790, 1239, 162, 38, (235/scaleword_three_right), (908/scaleword_three_right));        //天梯右边第3行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_four_right= 1-(-currentDis>1092*scorllratio ? -(currentDis+1092*scorllratio):0)/100>0 ? (1-(-currentDis>1092*scorllratio ? -(currentDis+1092*scorllratio):0)/100):0
+            let scaleword_four_right= distanceScoll(1092);
             cxt1.scale(scaleword_four_right,scaleword_four_right);
             // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_four_right-162))/scaleword_four_right/ratio, (860*ratio-(69*scaleword_four_right-69))/scaleword_four_right/ratio);        //天梯左边第11行字
             drawImage(img3, 439, 1249, 161, 32, (235/scaleword_four_right), (922/scaleword_four_right));        //天梯右边第4行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_fifth_right= 1-(-currentDis>1102*scorllratio ? -(currentDis+1102*scorllratio):0)/100>0 ? (1-(-currentDis>1102*scorllratio ? -(currentDis+1102*scorllratio):0)/100):0
+            let scaleword_fifth_right= distanceScoll(1102);
             cxt1.scale(scaleword_fifth_right,scaleword_fifth_right);
             // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_fifth_right-162))/scaleword_fifth_right/ratio, (860*ratio-(69*scaleword_fifth_right-69))/scaleword_fifth_right/ratio);        //天梯左边第11行字
             drawImage(img3, 853, 1092, 158, 57, (235/scaleword_fifth_right), (935/scaleword_fifth_right));        //天梯右边第5行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_six_right= 1-(-currentDis>1112*scorllratio ? -(currentDis+1112*scorllratio):0)/100>0 ? (1-(-currentDis>1112*scorllratio ? -(currentDis+1112*scorllratio):0)/100):0
+            let scaleword_six_right= distanceScoll(1112);
             cxt1.scale(scaleword_six_right,scaleword_six_right);
             // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_six_right-162))/scaleword_six_right/ratio, (860*ratio-(69*scaleword_six_right-69))/scaleword_six_right/ratio);        //天梯左边第11行字
             drawImage(img3, 281, 1239, 158, 44, (235/scaleword_six_right), (956/scaleword_six_right));        //天梯右边第6行字
             cxt1.restore()
             
             cxt1.save()
-            let scaleword_seven_right= 1-(-currentDis>1132*scorllratio ? -(currentDis+1132*scorllratio):0)/100>0 ? (1-(-currentDis>1132*scorllratio ? -(currentDis+1132*scorllratio):0)/100):0
+            let scaleword_seven_right= distanceScoll(1132);
             cxt1.scale(scaleword_seven_right,scaleword_seven_right);
             // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_seven_right-162))/scaleword_seven_right/ratio, (860*ratio-(69*scaleword_seven_right-69))/scaleword_seven_right/ratio);        //天梯左边第11行字
             drawImage(img3, 836, 1151, 159, 47, (235/scaleword_seven_right), (970/scaleword_seven_right));        //天梯右边第7行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_eight_right= 1-(-currentDis>1152*scorllratio ? -(currentDis+1152*scorllratio):0)/100>0 ? (1-(-currentDis>1152*scorllratio ? -(currentDis+1152*scorllratio):0)/100):0
+            let scaleword_eight_right= distanceScoll(1152);
             cxt1.scale(scaleword_eight_right,scaleword_eight_right);
             // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_eight_right-162))/scaleword_eight_right/ratio, (860*ratio-(69*scaleword_eight_right-69))/scaleword_eight_right/ratio);        //天梯左边第11行字
             drawImage(img3, 323, 1068, 158, 70, (235/scaleword_eight_right), (984/scaleword_eight_right));        //天梯右边第8行字
             cxt1.restore()
 
             cxt1.save()
-            let scaleword_nine_right= 1-(-currentDis>1162*scorllratio ? -(currentDis+1162*scorllratio):0)/100>0 ? (1-(-currentDis>1162*scorllratio ? -(currentDis+1162*scorllratio):0)/100):0
+            let scaleword_nine_right= distanceScoll(1162);
             cxt1.scale(scaleword_nine_right,scaleword_nine_right);
             // drawImage(img3, 794, 1020, 162, 69, (235*ratio-(162*scaleword_nine_right-162))/scaleword_nine_right/ratio, (860*ratio-(69*scaleword_nine_right-69))/scaleword_nine_right/ratio);        //天梯左边第11行字
             drawImage(img3, 140, 1130, 155, 67, (235/scaleword_nine_right), (1004/scaleword_nine_right));        //天梯右边第9行字
             cxt1.restore()
 
-            /************************************************************天梯右边字**********************************************************************************************/
+            /************************************************************天梯二右边字**********************************************************************************************/
+
+            /************************************************************天梯三左边字**********************************************************************************************/
+
+            cxt1.save()
+            let three_scalewordleft_one= distanceScoll(1809);
+            cxt1.scale(three_scalewordleft_one,three_scalewordleft_one);
+            drawImage(img3, 297, 494, 144, 109, (57*ratio-(144*three_scalewordleft_one-144))/three_scalewordleft_one/ratio, (1091*ratio-(109*three_scalewordleft_one-109))/three_scalewordleft_one/ratio);        //天梯左边第1行字
+            cxt1.restore()
+
+            cxt1.save()
+            let three_scalewordleft_two= distanceScoll(1835);
+            cxt1.scale(three_scalewordleft_two,three_scalewordleft_two);
+            drawImage(img3, 0, 1129, 139, 76, (57*ratio-(139*three_scalewordleft_two-139))/three_scalewordleft_two/ratio, (1128*ratio-(76*three_scalewordleft_two-76))/three_scalewordleft_two/ratio);        //天梯左边第1行字
+            cxt1.restore()
+            
+            cxt1.save()
+            let three_scalewordleft_three= distanceScoll(1854);
+            cxt1.scale(three_scalewordleft_three,three_scalewordleft_three);
+            drawImage(img3, 650, 1193, 140, 53, (57*ratio-(140*three_scalewordleft_three-140))/three_scalewordleft_three/ratio, (1157*ratio-(53*three_scalewordleft_three-53))/three_scalewordleft_three/ratio);        //天梯左边第1行字
+            cxt1.restore()
+
+            cxt1.save()
+            let three_scalewordleft_four= distanceScoll(1885);
+            cxt1.scale(three_scalewordleft_four,three_scalewordleft_four);
+            drawImage(img3, 130, 1252, 141, 45, (57*ratio-(141*three_scalewordleft_four-141))/three_scalewordleft_four/ratio, (1174*ratio-(45*three_scalewordleft_four-45))/three_scalewordleft_four/ratio);        //天梯左边第1行字
+            cxt1.restore()
+
+            cxt1.save()
+            let three_scalewordleft_five= distanceScoll(1910);
+            cxt1.scale(three_scalewordleft_five,three_scalewordleft_five);
+            drawImage(img3, 139, 1197, 140, 55, (57*ratio-(140*three_scalewordleft_five-140))/three_scalewordleft_five/ratio, (1188 *ratio-(55*three_scalewordleft_five-55))/three_scalewordleft_five/ratio);        //天梯左边第1行字
+            cxt1.restore()
+
+            cxt1.save()
+            let three_scalewordleft_six= distanceScoll(1926);
+            cxt1.scale(three_scalewordleft_six,three_scalewordleft_six);
+            drawImage(img3, 612, 1247, 140, 43, (57*ratio-(140*three_scalewordleft_six-140))/three_scalewordleft_six/ratio, (1207*ratio-(43*three_scalewordleft_six-43))/three_scalewordleft_six/ratio);        //天梯左边第1行字
+            cxt1.restore()
+            /************************************************************天梯三左边字**********************************************************************************************/
 
 
 
@@ -400,9 +515,6 @@
             $('#canvas').attr('height', height);
         }
         $(window).resize(function () {
-            console.log(canvas1.height)
-            cxt1.clearRect(0, 0, canvas1.width, canvas1.height);
-            bg(0)
             drawImg()
         })
     }

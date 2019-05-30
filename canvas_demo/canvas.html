@@ -89,9 +89,11 @@ $(document).ready(function(){
     var create = new createImg();
     
 	// canvas1Fun();
-    Img.src = "./img/bg.jpg";
+    Img.src = "./img/1.png";
     create.init()
-    Img.onload = create.drawImg();
+    Img.onload = function(){
+        create.drawImg();
+    }
     for(let i=0;i<100;i++){
         var balls = new ball();
         balls.create();
@@ -105,10 +107,15 @@ $(document).ready(function(){
             b.move()
         }
     },1000/60)
+
+    setInterval(()=>{
+        create.move()
+    },1000/60)
     window.addEventListener("scroll",function(){
-    console.log("滚动的高度：",$(document).scrollTop(),"可视文档高度：",$(window).height(),"文档的高度：",$(document.body).height(),"物理设备高度：",window.outerWidth)
+        // console.log($(document).scrollTop())
+    // console.log("滚动的高度：",$(document).scrollTop(),"可视文档高度：",$(window).height(),"文档的高度：",$(document.body).height(),"物理设备高度：",window.outerWidth)
     // if($(document).scrollTop()%20 ==0){
-            create.move()
+            // create.move()
     // }
 })
 })
@@ -140,26 +147,34 @@ createImg.prototype={
     init:function(width,height){
         this.width = width;
         this.height = height;
-        this.rotate = 0;
+
+
+        this.rotate = 1;
+        this.flag = true;//true递减  false 递增
     },
     drawImg:function(){
-        cacheCanvas = document.createElement("canvas");
-        var cacheCanvascxt = cacheCanvas.getContext('2d');
-        cacheCanvas.width = canvas1.width;
-        cacheCanvas.height = canvas1.height;
-        cacheCanvascxt.drawImage(Img,0, 0,400,400);
+        // cacheCanvas = document.createElement("canvas");
+        // var cacheCanvascxt = cacheCanvas.getContext('2d');
+        // cacheCanvas.width = canvas1.width;
+        // cacheCanvas.height = canvas1.height;
+        // cacheCanvascxt.drawImage(Img,0, 0,400,400);
         cxt1.save();
-        cxt1.clearRect(0,0,canvas1.width,canvas1.height);
         // cxt1.beginPath();
-        // cxt1.rotate(this.rotate);
-        cxt1.translate(this.rotate,0)
+        cxt1.scale(this.rotate,this.rotate);
         cxt1.drawImage(Img,0, 0,400,400);
         cxt1.restore();
     },
     move:function(){
-        this.rotate +=  1;
-        if(this.rotate>90){
-            this.rotate -=1;
+        if(this.rotate>=1){
+            this.flag = true
+        }
+        if(this.rotate<=0){
+            this.flag = false
+        }
+        if(this.flag){
+            this.rotate -=  0.01;
+        }else{
+            this.rotate +=0.01;
         }
         this.drawImg()
     }
