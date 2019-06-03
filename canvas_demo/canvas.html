@@ -158,10 +158,14 @@ createImg.prototype={
         // cacheCanvas.width = canvas1.width;
         // cacheCanvas.height = canvas1.height;
         // cacheCanvascxt.drawImage(Img,0, 0,400,400);
+        cxt1.clearRect(-200,-200,canvas1.width,canvas1.height);
         cxt1.save();
         // cxt1.beginPath();
-        cxt1.scale(this.rotate,this.rotate);
-        cxt1.drawImage(Img,0, 0,400,400);
+        // cxt1.scale(this.rotate,this.rotate);
+        cxt1.translate(200,200)
+        console.log(Math.PI/180*(this.rotate)*10)
+        cxt1.rotate(Math.PI/180*(this.rotate)*10)
+        cxt1.drawImage(Img,-200, -200,400,400);
         cxt1.restore();
     },
     move:function(){

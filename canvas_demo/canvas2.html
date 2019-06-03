@@ -149,7 +149,7 @@
             cxt1.translate(0,currentDis/ratio*2);
             cxt1.save()
             cxt1.drawImage(bg_first,0,0, picsWidth, pic1height);
-            cxt1.drawImage(bg_second,0,pic1height+10, picsWidth,pic2height);  //第二章背景图
+            cxt1.drawImage(bg_second,0,pic1height, picsWidth,pic2height);  //第二章背景图
             cxt1.drawImage(bg_third,0,(pic1height) + (pic2height), picsWidth, pic3height);  //第3章背景图
             cxt1.drawImage(bg_four,0,(pic1height) + (pic2height) + (pic3height), picsWidth, pic4height);  //第4章背景图 
             cxt1.restore()
@@ -297,7 +297,7 @@
             
             cxt1.save()
             // Horiz = cloudsDistance(0.65*2542,1);
-            cxt1.translate(0,currentDis/ratio*0.15)
+            cxt1.translate(0,currentDis/ratio*0.24)
             drawImage(img2, 1085, 294,366, 366,95,1465);     //龙之间的太阳
             cxt1.restore()
 
@@ -316,13 +316,64 @@
             cxt1.save()
             // Horiz = cloudsDistance(2434,2);
             cxt1.translate(0,currentDis/ratio)
-            drawImage(img2, 1480, 673,507, 240,65,2025);     //三个塔
+            drawImage(img2, 1480, 673,507, 240,64,2025);     //三个塔
             cxt1.restore()
 
             cxt1.save()
             // Horiz = cloudsDistance(2434,2);
             cxt1.translate(0,currentDis/ratio)
             drawImage(img2, 0, 543,750, 203,0,2087);     //三个塔下的云朵
+            cxt1.restore()
+
+            cxt1.save()
+            // Horiz = cloudsDistance(2434,2);
+            cxt1.translate(0,currentDis/ratio*0.5)
+            drawImage(img4, 0, 0, 750, 650, 0, 1888);     //背景星星
+            cxt1.restore()
+
+            cxt1.save()
+            // Horiz = cloudsDistance(2434,2);
+            cxt1.translate(0,currentDis/ratio*0.1)
+            drawImage(img2, 1062, 685,366, 366,91,1867);     //紫色太阳
+            cxt1.restore()
+
+            cxt1.save()
+            cxt1.translate(0,currentDis/ratio*0.4)
+            drawImage(img3, 557, 741,238, 116,0,1848);     //三个塔下的云朵下的左边云朵
+            drawImage(img3, 800, 852,112, 167,320,1878);     //三个塔下的云朵下的右边云朵
+
+            drawImage(img3, 611, 328,175, 105,0,1964);     //三个塔下的云朵下的左边云朵
+            drawImage(img3, 0, 0,302, 146,224,1994);     //三个塔下的云朵下的右边云朵
+            
+            drawImage(img3, 610, 437,198, 182,-2,2038);     //三个塔下的云朵下的左边云朵
+            drawImage(img3, 0, 979,134, 125,310,2068);     //三个塔下的云朵下的右边云朵   
+            cxt1.restore()
+
+            // 鸟
+            cxt1.save()
+            Horiz = cloudsDistance(1400*2,1);
+            console.log(-Horiz*Math.PI/180)
+            // cxt1.rotate(-Horiz*Math.PI/180)
+            cxt1.translate(0,currentDis/ratio*0.4)
+            drawImage(img2, 1825, 0,221, 434,230,1936);   //鸟翅膀右
+            cxt1.restore()
+
+            cxt1.save()
+            // if(-currentDis/ratio>1400){
+            //     console.log(Math.PI/180,(-currentDis/ratio/1000),"表");
+            //     cxt1.rotate(Math.PI/180*(-currentDis/ratio/1000))
+            // }
+            cxt1.translate(0,currentDis/ratio*0.4)
+            drawImage(img2, 342, 954,371, 251,51,1902);   //鸟翅膀左
+            cxt1.restore()
+
+            cxt1.save()
+            cxt1.translate(0,currentDis/ratio*0.4)
+            // drawImage(img2, 1825, 0,221, 434,230,1936);   //鸟翅膀右
+            // drawImage(img2, 342, 954,371, 251,51,1902);   //鸟翅膀左
+            drawImage(img4, 0, 1274,518, 600,45,2038);   //鸟尾巴
+            drawImage(img2, 998, 1055,371, 324,65,1949);   //鸟身
+            drawImage(img3, 171, 208,128, 217,198,1903);   //鸟头
             cxt1.restore()
 
             /************************************************************天梯一左边字**********************************************************************************************/
