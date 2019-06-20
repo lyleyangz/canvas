@@ -32,6 +32,7 @@
     var ratio = window.devicePixelRatio;
     var startY =0,endY = 0,currentDis=0;
     var totalHeight = 0;
+    var timer,currentPis={};
     // 1.准备画布
     // 2.选择画笔
     // 3.选择颜料
@@ -114,8 +115,9 @@
             if(-currentDis<=0){
                 currentDis = 0;
             }
+            // clearInterval(timer)
+            // drawImg()
             console.log(currentDis)
-            drawImg()
         }, { passive: false });
         // window.addEventListener('touchend', e => {
         //     var touch = e.changedTouches[0];
@@ -138,7 +140,67 @@
                 return (pos*ratio-(attr*scale-attr))/scale/ratio
             }
         }
-        function drawImg() {
+function windowToCanvas(x,y) {
+      var cvsbox = canvas1.getBoundingClientRect();
+      return { x: Math.round(x - cvsbox.left), y: Math.round(y - cvsbox.top) };
+}
+canvas1.onclick = function (e) {
+     var clickXY = windowToCanvas(e.clientX, e.clientY);
+     console.log(clickXY,currentPis)
+     if(clickXY.x<currentPis["bird_head"].Range.maxPisX&&clickXY.x>currentPis["bird_head"].Range.minPisX&&clickXY.y<currentPis["bird_head"].Range.maxPisY&&clickXY.y>currentPis["bird_head"].Range.minPisY){
+        console.log("鸟头被点了！")
+     }
+}
+function createImg(){}
+createImg.prototype={
+    init:function(){
+        this.rotate = 1;
+        this.flag = true;//true递减  false 递增
+    },
+    drawImg:function(){
+        // console.log(this.rotate)
+        clearCanvas()
+        cxt1.save();
+        drawImg()
+        cxt1.translate(460,3850+currentDis/ratio*0.4)
+        cxt1.rotate(Math.PI/180*(this.rotate)*10);
+        drawImage(img2, 1825, 0,221, 434,0,0);   //鸟翅膀右
+        cxt1.restore();
+    },
+    move:function(){
+        if(this.rotate>=1){
+            this.flag = true
+        }
+        if(this.rotate<=-1){
+            this.flag = false
+        }
+        if(this.flag){
+            this.rotate -=  0.01;
+        }else{
+            this.rotate +=0.01;
+        }
+        // clearInterval(timer)
+        // cxt1.clearRect(0,0,375*ratio,totalHeight)
+        // this.drawImg()
+        return Math.PI/180*(this.rotate)*10
+    }
+}
+
+
+function clearCanvas(){
+    cxt1.clearRect(0,0,375*ratio,totalHeight)
+}
+
+var create = new createImg();
+create.init();
+timer=setInterval(()=>{
+    var a = create.move();
+    clearCanvas()
+    drawImg(a)
+},1000/60)
+
+
+        function drawImg(a) {
             resizeCanvas(cw * ratio, ch * ratio);
             var picsWidth = cw*ratio;
             var pic1height = cw *  BG(1).height * ratio /  BG(1).width;
@@ -349,30 +411,58 @@
             drawImage(img3, 0, 979,134, 125,310,2068);     //三个塔下的云朵下的右边云朵   
             cxt1.restore()
 
+            
+
+            cxt1.save()
+            // cxt1.translate(571,3830+currentDis/ratio*0.4)
+            cxt1.translate(571,3830)
+            Horiz = cloudsDistance(1400*2,0.01);
+            var angleDeg = (-Horiz*15*Math.PI/180)>=0.15? 0.15 :(-Horiz*15*Math.PI/180);
+            cxt1.rotate(-a);
+            drawImage(img2, 342, 954,371, 251,-240,0);   //鸟翅膀左
+            cxt1.restore()
+
             // 鸟
             cxt1.save()
-            Horiz = cloudsDistance(1400*2,1);
-            console.log(-Horiz*Math.PI/180)
-            // cxt1.rotate(-Horiz*Math.PI/180)
-            cxt1.translate(0,currentDis/ratio*0.4)
-            drawImage(img2, 1825, 0,221, 434,230,1936);   //鸟翅膀右
-            cxt1.restore()
-
-            cxt1.save()
-            // if(-currentDis/ratio>1400){
-            //     console.log(Math.PI/180,(-currentDis/ratio/1000),"表");
-            //     cxt1.rotate(Math.PI/180*(-currentDis/ratio/1000))
+            // cxt1.translate(460,3850+currentDis/ratio*0.4)
+            cxt1.translate(460,3850)
+            // cxt1.translate(500,currentDis/ratio*0.4)
+            // Horiz = cloudsDistance(1400*2,0.01);
+            // var angleDeg = (-Horiz*45*Math.PI/180)>=0.45? 0.45 :(-Horiz*45*Math.PI/180);
+            // if(Horiz==0){
+            //    clearInterval(timer) 
+            // }else{
             // }
-            cxt1.translate(0,currentDis/ratio*0.4)
-            drawImage(img2, 342, 954,371, 251,51,1902);   //鸟翅膀左
+            cxt1.rotate(a);
+            drawImage(img2, 1825, 0,221, 434,0,0);   //鸟翅膀右
             cxt1.restore()
 
+
+
             cxt1.save()
-            cxt1.translate(0,currentDis/ratio*0.4)
+            // cxt1.translate(0,currentDis/ratio*0.4)
             // drawImage(img2, 1825, 0,221, 434,230,1936);   //鸟翅膀右
             // drawImage(img2, 342, 954,371, 251,51,1902);   //鸟翅膀左
             drawImage(img4, 0, 1274,518, 600,45,2038);   //鸟尾巴
             drawImage(img2, 998, 1055,371, 324,65,1949);   //鸟身
+            // drawImage(img3, 171, 208,128, 217,198,1903);   //鸟头
+            cxt1.restore()
+
+            cxt1.save()
+            // cxt1.translate(0,currentDis/ratio*0.4)
+            Horiz = cloudsDistance(2500,1);
+            if(Horiz!==0){
+                currentPis["bird_head"] = {
+                    pisx:238,
+                    pisY:667+Horiz/2,
+                    Range:{
+                        maxPisY:20+667+Horiz/2,
+                        minPisY:-20+667+Horiz/2,
+                        maxPisX:20+238,
+                        minPisX:-20+238
+                    }
+                }
+            }
             drawImage(img3, 171, 208,128, 217,198,1903);   //鸟头
             cxt1.restore()
 
@@ -391,7 +481,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 134, 1057, 188, 73, (57*ratio-(188*Global_Scale-188))/Global_Scale/ratio, (635*ratio-(73*Global_Scale-73))/Global_Scale/ratio);       //天梯左边第2行字
-            drawImage(img3, 134, 1057, 188, 73, scalePosition(188,57,Global_Scale,scorllratio),scalePosition(73,635,Global_Scale,false));       //天梯左边第2行字
+            drawImage(img3, 134, 1057, 188, 73, scalePosition(188,57,Global_Scale,),scalePosition(73,635,Global_Scale,false));       //天梯左边第2行字
             cxt1.restore()
 
             cxt1.save()
@@ -399,7 +489,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 649, 1145, 186, 49, (57*ratio-(188*Global_Scale-188))/Global_Scale/ratio, (662*ratio-(73*Global_Scale-73))/Global_Scale/ratio);       //天梯左边第3行字
-            drawImage(img3, 649, 1145, 186, 49, scalePosition(188,57,Global_Scale,scorllratio),scalePosition(73,662,Global_Scale,false));       //天梯左边第3行字
+            drawImage(img3, 649, 1145, 186, 49, scalePosition(188,57,Global_Scale,),scalePosition(73,662,Global_Scale,false));       //天梯左边第3行字
             cxt1.restore()
 
             cxt1.save()
@@ -407,7 +497,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 665, 1090, 187, 53, (57*ratio-(187*Global_Scale-187))/Global_Scale/ratio, (678*ratio-(53*Global_Scale-53))/Global_Scale/ratio);  //天梯左边第4行字
-            drawImage(img3, 665, 1090, 187, 53, scalePosition(187,57,Global_Scale,scorllratio),scalePosition(53,678,Global_Scale,false));  //天梯左边第4行字
+            drawImage(img3, 665, 1090, 187, 53, scalePosition(187,57,Global_Scale,),scalePosition(53,678,Global_Scale,false));  //天梯左边第4行字
             cxt1.restore()
             
             cxt1.save()
@@ -415,7 +505,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 296, 1191, 185, 47,(57*ratio-(185*Global_Scale-185))/Global_Scale/ratio, (698*ratio-(47*Global_Scale-47))/Global_Scale/ratio);       //天梯左边第5行字
-            drawImage(img3, 296, 1191, 185, 47,scalePosition(185,57,Global_Scale,scorllratio),scalePosition(47,698,Global_Scale,false));       //天梯左边第5行字
+            drawImage(img3, 296, 1191, 185, 47,scalePosition(185,57,Global_Scale,),scalePosition(47,698,Global_Scale,false));       //天梯左边第5行字
             cxt1.restore()
 
             cxt1.save()
@@ -423,7 +513,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 610, 229, 185, 65, (57*ratio-(185*Global_Scale-185))/Global_Scale/ratio, (717*ratio-(65*Global_Scale-65))/Global_Scale/ratio);       //天梯左边第6行字
-            drawImage(img3, 610, 229, 185, 65, scalePosition(185,57,Global_Scale,scorllratio),scalePosition(65,717,Global_Scale,false));       //天梯左边第6行字
+            drawImage(img3, 610, 229, 185, 65, scalePosition(185,57,Global_Scale,),scalePosition(65,717,Global_Scale,false));       //天梯左边第6行字
             cxt1.restore()
 
             cxt1.save()
@@ -431,7 +521,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 790, 1200, 184, 37, (57*ratio-(184*Global_Scale-184))/Global_Scale/ratio, (745*ratio-(37*Global_Scale-37))/Global_Scale/ratio);      //天梯左边第7行字
-            drawImage(img3, 790, 1200, 184, 37, scalePosition(184,57,Global_Scale,scorllratio),scalePosition(37,745,Global_Scale,false));      //天梯左边第7行字
+            drawImage(img3, 790, 1200, 184, 37, scalePosition(184,57,Global_Scale,),scalePosition(37,745,Global_Scale,false));      //天梯左边第7行字
             cxt1.restore()
 
             cxt1.save()
@@ -439,7 +529,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 610, 1010, 182, 65, (57*ratio-(182*Global_Scale-182))/Global_Scale/ratio, (760*ratio-(65*Global_Scale-65))/Global_Scale/ratio);      //天梯左边第8行字
-            drawImage(img3, 610, 1010, 182, 65, scalePosition(182,57,Global_Scale,scorllratio),scalePosition(65,760,Global_Scale,false));      //天梯左边第8行字
+            drawImage(img3, 610, 1010, 182, 65, scalePosition(182,57,Global_Scale,),scalePosition(65,760,Global_Scale,false));      //天梯左边第8行字
             cxt1.restore()
 
             cxt1.save()
@@ -447,7 +537,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 482, 1078, 183, 61, (57*ratio-(183*Global_Scale-183))/Global_Scale/ratio, (786*ratio-(61*Global_Scale-61))/Global_Scale/ratio);       //天梯左边第9行字
-            drawImage(img3, 482, 1078, 183, 61, scalePosition(183,57,Global_Scale,scorllratio),scalePosition(61,786,Global_Scale,false));       //天梯左边第9行字
+            drawImage(img3, 482, 1078, 183, 61, scalePosition(183,57,Global_Scale,),scalePosition(61,786,Global_Scale,false));       //天梯左边第9行字
             cxt1.restore()
 
             cxt1.save()
@@ -455,7 +545,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 0, 1263, 113, 39, (75*ratio-(113*Global_Scale-113))/Global_Scale/ratio, (810*ratio-(39*Global_Scale-39))/Global_Scale/ratio);      //天梯左边第10行字
-            drawImage(img3, 0, 1263, 113, 39, scalePosition(113,75,Global_Scale,scorllratio),scalePosition(39,810,Global_Scale,false));      //天梯左边第10行字
+            drawImage(img3, 0, 1263, 113, 39, scalePosition(113,75,Global_Scale,),scalePosition(39,810,Global_Scale,false));      //天梯左边第10行字
             cxt1.restore()
 
             cxt1.save()
@@ -463,7 +553,7 @@
             cxt1.translate(0,currentDis/ratio*0.3)
             cxt1.scale(Global_Scale,Global_Scale);
             // drawImage(img3, 665, 1077, 37, 12, (90*ratio-(37*Global_Scale-37))/Global_Scale/ratio, (830*ratio-(12*Global_Scale-12))/Global_Scale/ratio);        //天梯左边第11行字
-            drawImage(img3, 665, 1077, 37, 12,  scalePosition(37,90,Global_Scale,scorllratio),scalePosition(12,830,Global_Scale,false));        //天梯左边第11行字
+            drawImage(img3, 665, 1077, 37, 12,  scalePosition(37,90,Global_Scale,),scalePosition(12,830,Global_Scale,false));        //天梯左边第11行字
             cxt1.restore()
             /************************************************************天梯一左边字**********************************************************************************************/
 
@@ -610,7 +700,6 @@
         function drawImage(img, imgx, imgy, imgw, imgh, canvasx, canvasy) {
             cxt1.drawImage(img, imgx, imgy, imgw, imgh, canvasx * ratio * widthratio, canvasy * ratio * widthratio, (imgw * ratio * widthratio) / 2, (imgh * ratio * widthratio) / 2);
         }
-        var timer;
         var timer2;
         function topMusicPaint() { }
         topMusicPaint.prototype = {
