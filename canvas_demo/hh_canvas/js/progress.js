@@ -12,4 +12,7 @@
 Progress.prototype.render = function(){
     this.draw.fillStyle = "greenyellow";
     this.draw.fillRect(this.x,this.y,this.w,this.h)
+    // return Math.PI/180*(this.rotate)*this.deg
+    // return this.shockFlag
+    // return this.computedPeak
 }
