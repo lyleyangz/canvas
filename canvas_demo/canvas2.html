@@ -99,6 +99,7 @@
             startY = touch.pageY;
         }, { passive: false });
         window.addEventListener('touchmove', e => {
+            e.preventDefault();
             var touch = event.changedTouches[0];
             endY = touch.pageY;
             currentDis += endY - startY;

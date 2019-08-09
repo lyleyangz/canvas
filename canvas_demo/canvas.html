@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>CANVAS</title>
     <script src="./js/jquery.js"></script>
     <script src="./js/canvas-keyframes.min.js"></script>
     <style>
-        .bg{
-            background: url("./img/3.png") no-repeat;
+        .bg {
+            /* background: url("./img/3.png") no-repeat; */
             background-size: 100% 100%;
             width: 100%;
             height: 2400px;
-            /* position: relative; */
             position: absolute;
             top: 0;
             left: 0;
             box-sizing: border-box;
         }
-        .outSide{
+
+        .outSide {
             /* position: absolute; */
             position: relative;
             box-sizing: border-box;
         }
-        .top{
+
+        .top {
             /* background: url("./img/3.jpg") no-repeat; */
             background-size: 100% 100%;
             width: 80%;
@@ -33,7 +35,8 @@
             height: 400px;
             box-sizing: border-box;
         }
-        .mid{
+
+        .mid {
             background: url("./img/3.jpg") no-repeat;
             background-size: 100% 100%;
             width: 80%;
@@ -44,7 +47,8 @@
             height: 800px;
             box-sizing: border-box;
         }
-        .bottom{
+
+        .bottom {
             background: url("./img/3.jpg") no-repeat;
             background-size: 100% 100%;
             width: 100%;
@@ -55,312 +59,460 @@
             height: 800px;
             box-sizing: border-box;
         }
+
+        #box{
+
+width: 200px;
+
+height: 100px;
+
+background-color: #f60;
+
+}
     </style>
 </head>
+
 <body>
-    <div class="bg"></div>
-    <div class="outSide">
+    <!-- <div class="bg"></div> -->
+    <!-- <div class="outSide">
         <div class="mid">
-            
-        </div>
-        <div class="top">
-            <canvas id="canvas1" width="400" height="400"></canvas>
-        </div>
-        <div class="bottom">
+             -->
+    <!-- </div> -->
+    <!-- <div class="top"> -->
+    <canvas id="canvas1" width="400" height="400"></canvas>
+    <!-- </div> -->
+    <!-- <div class="bottom">
             <canvas id="canvas3" width="800" height="800"></canvas>
             <audio src="./resource/159487_Acoustic_Loop_41.mp3" type ="audio/mp3" loop preload autoplay="true" controls></audio>
-        </div>
-    </div>
+        </div> -->
+    <!-- </div> -->
+    <button id="run">开始运动</button>
+
+<div id="box"></div>
 </body>
 <script type="text/javascript">
-// 1.准备画布
-// 2.选择画笔
-// 3.选择颜料
-// 4.画出轮廓
-// 5.填充颜色
-var canvas1 = document.getElementById('canvas1');
-var cxt1 = canvas1.getContext('2d');
-var canvas2 = document.getElementById('canvas2');
-var canvas3 = document.getElementById('canvas3');
-var cxt3 = canvas3.getContext('2d');
-var Img = new Image();
-var creatBalls = []
-var cacheCanvas;
 
-$(document).ready(function(){
-    var create = new createImg();
-    
-	// canvas1Fun();
-    Img.src = "./img/20170921184703447.gif";
-    create.init()
-    Img.onload = function(){
-        create.drawImg();
-    }
-    for(let i=0;i<100;i++){
-        var balls = new ball();
-        balls.create();
-        // balls.draw();
-        creatBalls.push(balls)
-    }
-    setInterval(()=>{
-        cxt3.clearRect(0,0,canvas3.width,canvas3.height)
-        for(var b of creatBalls){
-            // console.log(b)
-            b.move()
-        }
-    },10)
+window.onload = function (){
 
-    setInterval(()=>{
-        create.move()
-    },1000/60)
-    window.addEventListener("scroll",function(){
-        // console.log($(document).scrollTop())
-    // console.log("滚动的高度：",$(document).scrollTop(),"可视文档高度：",$(window).height(),"文档的高度：",$(document.body).height(),"物理设备高度：",window.outerWidth)
-    // if($(document).scrollTop()%20 ==0){
-            // create.move()
-    // }
+    var box = document.getElementById("#box"),
+
+    btn = document.getElementById("#run"),
+
+    timer = null,
+
+    leader = 0,//开始位置
+
+    target = 400;//结束位置
+
+
+
+    $("#run").click(function (){
+
+        timer = setInterval(function (){
+
+            leader = leader + (target - leader) / 20;
+
+            $("#box").css("marginLeft",leader + "px");
+
+        }, 10);
+
     })
 
-    var count = 0;
-			var imgArr = [];
-			for(var i=1;i<=4;i++){
-				(function(i){
-					var img = new Image();
-					img.onload = function(){
-						img.onload = null;
-						count++;
-						// 有可能图片加载有快有满慢，所以用角标存
-						imgArr[i-1] = img;
-						if(count==4){
-							keyFrames(imgArr);
-						}
-					}
-					img.onerror = function(){
-					}
-					img.src = 'img/move/'+i+'.png';
-				})(i);
-			}
-
-})
-var keyFrames;
-function keyFrames(imgArr){
-    keyFrames = new CanvasKeyFrames(document.querySelector('.mid'), 'array', imgArr, {
-        fps:1,
-        width:100,
-        height:100
-    });
-    keyFrames.play();
-}
-// var Girl=function(x,y,w,h,dx,dy,sw,sh){
-// 	this.girlImage;
-// 	this.girlReady=false;
-// 	//图像数据
-// 	this.p=[
-// 	    {px:5,py:5,w:190,h:290},
-// 	    {px:205,py:5,w:190,h:290},
-// 	    {px:605,py:5,w:190,h:290},
-// 	    {px:805,py:5,w:190,h:290},
-// 	    {px:1005,py:5,w:190,h:290},
-// 	    {px:1205,py:5,w:190,h:290},
-// 	    {px:1405,py:5,w:190,h:290}
-// 	];
-// 	//位置
-// 	this.x;
-// 	this.y;
-// 	//大小
-// 	this.w;
-// 	this.h;
-// 	//速度
-// 	this.dx;
-// 	this.dy;
-// 	//移动范围
-// 	this.sw;
-// 	this.sh;
-// 	//当前帧
-// 	this.findex;
-// 	//加载图像
-// 	this.loadImage();
-// 	//第一次初始化
-// 	this.init(x,y,w,h,dx,dy,sw,sh);
-// }
-// //角色的初始化
-// Girl.prototype.init=function(x,y,w,h,dx,dy,sw,sh){
-// 		//位置
-// 		this.x=x;
-// 		this.y=y;
-// 		//大小
-// 		this.w=w;
-// 		this.h=h;
-// 		//速度
-// 		this.dx=dx;
-// 		this.dy=dy;
-// 		//移动范围
-// 		this.sw=sw;
-// 		this.sh=sh;
-// 		//当前帧为0
-// 		this.findex=0;
-// }
-// //加载图片
-// Girl.prototype.loadImage=function(){
-// 	this.girlImage=new Image();
-// 	if(this.girlImage.complete){
-// 		this.girlReady=true;
-// 	}else{
-// 		this.girlImage=function(){
-// 			this.girlReady=true;
-// 		}
-// 	}
-// 	this.girlImage.src="img/1.png";
-// };
-// //角色更新
-// Girl.prototype.update=function(){
-// 	this.draw();
-// 	//位置更新
-// 	this.x+=this.dx;
-// 	this.y+=this.dy;
-// 	if(this.x>this.sw){
-// 		this.x=-this.w;
-// 	}
-// 	//更新帧序号
-// 	this.findex=(this.findex+1)%this.p.length;
-// }
-// //角色绘制
-// Girl.prototype.draw=function(){
-// 	if(this.girlReady){
-// 		let x=this.p[this.findex].px;
-// 		let y=this.p[this.findex].py;
-// 		let w=this.p[this.findex].w;
-// 		let h=this.p[this.findex].h;
-// 		console.log(x);
-// 		console.log(y);
-// 		console.log(w);
-// 		console.log(h);
-// 		console.log(this.w);
-// 		console.log(this.h);
-// 		ctx.drawImage(this.girlImage,x,y,w,h,this.x,this.y,this.w,this.h);
-// 	}
-// }
-
-function canvas1Fun(){
-
-}
-function canvas2Fun(Percent,r){
-    var cxt = canvas2.getContext('2d');
-    var x = 350*Math.cos(Percent);
-    var y = 350*Math.sin(Percent);
-    cxt.beginPath();
-    cxt.fillStyle="red";
-    cxt.arc(x,y,r,0,Math.PI*2);
-    cxt.fill();
-}
-function canvas3Fun(){
-    var cxt = canvas3.getContext('2d');
-    cxt.lineWidth = 5;                              //选择画笔
-    cxt.strokeStyle = "green";                        //选择颜料
-    cxt.moveTo(10,10);                              //...
-    cxt.lineTo(150,50);                             //...
-    cxt.lineTo(10,50);                              //画出轮廓
-    cxt.stroke(); 
 }
 
 
-function createImg(){}
-createImg.prototype={
-    init:function(width,height){
-        this.width = width;
-        this.height = height;
 
 
-        this.rotate = 1;
-        this.flag = true;//true递减  false 递增
-    },
-    drawImg:function(){
-        // cacheCanvas = document.createElement("canvas");
-        // var cacheCanvascxt = cacheCanvas.getContext('2d');
-        // cacheCanvas.width = canvas1.width;
-        // cacheCanvas.height = canvas1.height;
-        // cacheCanvascxt.drawImage(Img,0, 0,400,400);
-        cxt1.clearRect(0,0,canvas1.width,canvas1.height);
-        cxt1.save();
-        // cxt1.beginPath();
-        // cxt1.scale(this.rotate,this.rotate);
-        cxt1.translate(10,10)
-        cxt1.rotate(Math.PI/180*(this.rotate)*10)
-        cxt1.drawImage(Img,0, 0,200,200);
-        cxt1.restore();
+    //     var timer = null,
 
-        cxt1.save();
-        // cxt1.beginPath();
-        // cxt1.scale(this.rotate,this.rotate);
-        // cxt1.translate(100,100)
-        // console.log(Math.PI/180*(this.rotate)*10)
-        // cxt1.rotate(Math.PI/180*(this.rotate)*10)
-        cxt1.drawImage(Img,200, 200,200,200);
-        cxt1.restore();
-    },
-    move:function(){
-        if(this.rotate>=1){
-            this.flag = true
-        }
-        if(this.rotate<=-1){
-            this.flag = false
-        }
-        if(this.flag){
-            this.rotate -=  0.01;
-        }else{
-            this.rotate +=0.01;
-        }
-        this.drawImg()
-    }
+    //         leader = 0,//开始位置
 
-}
-const randomInt = (min, max) => {return Math.floor(Math.random() * (max - min) + min)};
-var colorArr=["#00BFFF","#778899","#BA55D3","#C71585","#7FFF00","#F5DEB3","#CD853F","#B22222","#7CFC00","#48D1CC"];
+    //         target = 400;//结束位置
 
-function ball(){}
-ball.prototype={
-    create:function(){
-        this.x=randomInt(0,800);
-        this.y=randomInt(0,800);
-        this.r = randomInt(0,10);
-        this.color= colorArr[randomInt(0,10)];
-        this.posX = randomInt(-1,1);
-        this.posY = randomInt(-1,1);
-    },
-    draw:function(){
-        cxt3.beginPath();
-        cxt3.fillStyle=this.color;
-        // console.log(this.x,this.y)
-        cxt3.arc(this.x,this.y,this.r,0,Math.PI*2);
-        cxt3.fill()
-    },
-    move:function(){
-        this.x += this.posX;
-        this.y += this.posY;
-        if(this.x-this.r<0||this.x+this.r>800){
-            this.posX = -this.posX; 
-        }
-        if(this.y-this.r<0||this.y+this.r>800){
-            this.posY = -this.posY; 
-        }
-        this.draw()
-    }
-}
-function act1(Img,x){
-    var cxt = canvas1.getContext('2d');
-    cxt.clearRect(0,0,canvas1.width,canvas1.height);
-    cxt.rotate(Math.PI/6)
-    cxt.drawImage(Img,x, 0,200,200);
-    // window.requestAnimationFrame(act1);
-}
 
-var Percent = Math.PI;
-function act3(){
-    Percent +=Math.PI/90;
-    var cxt = canvas2.getContext('2d');
-    // cxt.clearRect(0,0,canvas2.width,canvas2.height);
-    canvas2Fun(Percent,10);
-    window.requestAnimationFrame(act3);
-}
+
+    //     console.log(btn)
+    //     $("#box").click(function(){
+    //         console.log(963)
+    //     })
+    // // 1.准备画布
+    // // 2.选择画笔
+    // // 3.选择颜料
+    // // 4.画出轮廓
+    // // 5.填充颜色
+    // // var canvas1 = document.getElementById('canvas1');
+    // // var cxt1 = canvas1.getContext('2d');
+    // // var canvas2 = document.getElementById('canvas2');
+    // // var canvas3 = document.getElementById('canvas3');
+    // // var cxt3 = canvas3.getContext('2d');
+    // var Img = new Image();
+    // var creatBalls = []
+    // var cacheCanvas;
+    // $(function () {
+    //     new CircleBar();
+    // });
+    // function CircleBar() {
+    //     this.data = null;
+    //     this.$el = $(".circleBar");
+    //     this.init();
+    // }
+    // CircleBar.prototype = {
+    //     init: function () {
+    //         this.setData();
+    //         this.create();
+    //         this.bindEvent();
+    //         this.renderBar();
+    //     },
+    //     //创建DOM
+    //     create: function () {
+
+    //     },
+    //     //绑定事件
+    //     bindEvent: function () {
+
+    //     },
+    //     //设置数据
+    //     setData: function () {
+    //         var barData = [this.getRandomInt(0, 100)];
+    //         console.log(barData)
+    //         this.data = barData;
+    //     },
+    //     //画圆
+    //     renderBar: function () {
+    //         function draw(context, i) {
+    //             // 大圆框
+    //             context.beginPath();
+    //             context.lineWidth = 1;
+    //             context.arc(50, 50, 46, 0, Math.PI * 2);
+    //             context.strokeStyle = "grey";
+    //             context.stroke();
+    //             // 大圆
+    //             context.beginPath();
+    //             var grd = context.createLinearGradient(15, 15, 80, 80);
+    //             grd.addColorStop(0, "#000");
+    //             grd.addColorStop(1, "#f00");
+    //             context.arc(50, 50, 38, 0, Math.PI * 2 * (i / 100));
+    //             context.lineWidth = 10;
+    //             context.strokeStyle = grd;
+    //             context.lineCap = "round";
+    //             context.stroke();
+
+    //             // 小圆
+    //             context.beginPath();
+    //             context.arc(50, 50, 30, 0, Math.PI * 2);
+    //             context.lineWidth = 1;
+    //             context.strokeStyle = "grey";
+    //             context.stroke();
+    //             context.fillStyle = "white";
+    //             context.fill();
+    //             // 字
+    //             context.beginPath();
+    //             context.textBaseline = "middle";
+    //             context.textAlign = "center";
+    //             context.font = "20px Arial";
+    //             context.fillStyle = "black";
+    //             context.fillText(parseInt(i) + "%", 50, 50);
+    //         }
+    //         //duration画进度条的时间
+    //         function animate(canvas, context, duration, progress) {
+    //             var i = 0;
+    //             var range = progress / duration / 10;
+    //             var timer = setInterval(function () {
+    //                 if (i >= progress) {
+    //                     clearInterval(timer);
+    //                 }
+    //                 context.clearRect(0, 0, canvas.width, canvas.height);
+    //                 draw(context, i);
+    //                 i = i + range;
+    //             }, 50);
+    //         }
+    //         var self = this;
+    //         var canvas = document.getElementById('canvas1');
+    //         var context = canvas.getContext("2d");
+    //         animate(canvas, context, 2.5, self.data[0]);
+    //     },
+    //     //得到一个两数之间的随机整数
+    //     getRandomInt: function (min, max) {
+    //         min = Math.ceil(min);
+    //         max = Math.floor(max);
+    //         return Math.floor(Math.random() * (max - min)) + min;
+    //     }
+    // };
+    // $(document).ready(function(){
+    //     var create = new createImg();
+
+    // 	// canvas1Fun();
+    //     Img.src = "./img/20170921184703447.gif";
+    //     create.init()
+    //     Img.onload = function(){
+    //         create.drawImg();
+    //     }
+    //     for(let i=0;i<100;i++){
+    //         var balls = new ball();
+    //         balls.create();
+    //         // balls.draw();
+    //         creatBalls.push(balls)
+    //     }
+    //     setInterval(()=>{
+    //         cxt3.clearRect(0,0,canvas3.width,canvas3.height)
+    //         for(var b of creatBalls){
+    //             // console.log(b)
+    //             b.move()
+    //         }
+    //     },10)
+
+    //     setInterval(()=>{
+    //         create.move()
+    //     },1000/60)
+    //     window.addEventListener("scroll",function(){
+    //         // console.log($(document).scrollTop())
+    //     // console.log("滚动的高度：",$(document).scrollTop(),"可视文档高度：",$(window).height(),"文档的高度：",$(document.body).height(),"物理设备高度：",window.outerWidth)
+    //     // if($(document).scrollTop()%20 ==0){
+    //             // create.move()
+    //     // }
+    //     })
+
+    //     var count = 0;
+    // 			var imgArr = [];
+    // 			for(var i=1;i<=4;i++){
+    // 				(function(i){
+    // 					var img = new Image();
+    // 					img.onload = function(){
+    // 						img.onload = null;
+    // 						count++;
+    // 						// 有可能图片加载有快有满慢，所以用角标存
+    // 						imgArr[i-1] = img;
+    // 						if(count==4){
+    // 							keyFrames(imgArr);
+    // 						}
+    // 					}
+    // 					img.onerror = function(){
+    // 					}
+    // 					img.src = 'img/move/'+i+'.png';
+    // 				})(i);
+    // 			}
+
+    // })
+    // var keyFrames;
+    // function keyFrames(imgArr){
+    //     keyFrames = new CanvasKeyFrames(document.querySelector('.mid'), 'array', imgArr, {
+    //         fps:1,
+    //         width:100,
+    //         height:100
+    //     });
+    //     keyFrames.play();
+    // }
+    // var Girl=function(x,y,w,h,dx,dy,sw,sh){
+    // 	this.girlImage;
+    // 	this.girlReady=false;
+    // 	//图像数据
+    // 	this.p=[
+    // 	    {px:5,py:5,w:190,h:290},
+    // 	    {px:205,py:5,w:190,h:290},
+    // 	    {px:605,py:5,w:190,h:290},
+    // 	    {px:805,py:5,w:190,h:290},
+    // 	    {px:1005,py:5,w:190,h:290},
+    // 	    {px:1205,py:5,w:190,h:290},
+    // 	    {px:1405,py:5,w:190,h:290}
+    // 	];
+    // 	//位置
+    // 	this.x;
+    // 	this.y;
+    // 	//大小
+    // 	this.w;
+    // 	this.h;
+    // 	//速度
+    // 	this.dx;
+    // 	this.dy;
+    // 	//移动范围
+    // 	this.sw;
+    // 	this.sh;
+    // 	//当前帧
+    // 	this.findex;
+    // 	//加载图像
+    // 	this.loadImage();
+    // 	//第一次初始化
+    // 	this.init(x,y,w,h,dx,dy,sw,sh);
+    // }
+    // //角色的初始化
+    // Girl.prototype.init=function(x,y,w,h,dx,dy,sw,sh){
+    // 		//位置
+    // 		this.x=x;
+    // 		this.y=y;
+    // 		//大小
+    // 		this.w=w;
+    // 		this.h=h;
+    // 		//速度
+    // 		this.dx=dx;
+    // 		this.dy=dy;
+    // 		//移动范围
+    // 		this.sw=sw;
+    // 		this.sh=sh;
+    // 		//当前帧为0
+    // 		this.findex=0;
+    // }
+    // //加载图片
+    // Girl.prototype.loadImage=function(){
+    // 	this.girlImage=new Image();
+    // 	if(this.girlImage.complete){
+    // 		this.girlReady=true;
+    // 	}else{
+    // 		this.girlImage=function(){
+    // 			this.girlReady=true;
+    // 		}
+    // 	}
+    // 	this.girlImage.src="img/1.png";
+    // };
+    // //角色更新
+    // Girl.prototype.update=function(){
+    // 	this.draw();
+    // 	//位置更新
+    // 	this.x+=this.dx;
+    // 	this.y+=this.dy;
+    // 	if(this.x>this.sw){
+    // 		this.x=-this.w;
+    // 	}
+    // 	//更新帧序号
+    // 	this.findex=(this.findex+1)%this.p.length;
+    // }
+    // //角色绘制
+    // Girl.prototype.draw=function(){
+    // 	if(this.girlReady){
+    // 		let x=this.p[this.findex].px;
+    // 		let y=this.p[this.findex].py;
+    // 		let w=this.p[this.findex].w;
+    // 		let h=this.p[this.findex].h;
+    // 		console.log(x);
+    // 		console.log(y);
+    // 		console.log(w);
+    // 		console.log(h);
+    // 		console.log(this.w);
+    // 		console.log(this.h);
+    // 		ctx.drawImage(this.girlImage,x,y,w,h,this.x,this.y,this.w,this.h);
+    // 	}
+    // }
+
+    // function canvas1Fun() {
+
+    // }
+    // function canvas2Fun(Percent, r) {
+    //     var cxt = canvas2.getContext('2d');
+    //     var x = 350 * Math.cos(Percent);
+    //     var y = 350 * Math.sin(Percent);
+    //     cxt.beginPath();
+    //     cxt.fillStyle = "red";
+    //     cxt.arc(x, y, r, 0, Math.PI * 2);
+    //     cxt.fill();
+    // }
+    // function canvas3Fun() {
+    //     var cxt = canvas3.getContext('2d');
+    //     cxt.lineWidth = 5;                              //选择画笔
+    //     cxt.strokeStyle = "green";                        //选择颜料
+    //     cxt.moveTo(10, 10);                              //...
+    //     cxt.lineTo(150, 50);                             //...
+    //     cxt.lineTo(10, 50);                              //画出轮廓
+    //     cxt.stroke();
+    // }
+
+
+    // function createImg() { }
+    // createImg.prototype = {
+    //     init: function (width, height) {
+    //         this.width = width;
+    //         this.height = height;
+
+
+    //         this.rotate = 1;
+    //         this.flag = true;//true递减  false 递增
+    //     },
+    //     drawImg: function () {
+    //         // cacheCanvas = document.createElement("canvas");
+    //         // var cacheCanvascxt = cacheCanvas.getContext('2d');
+    //         // cacheCanvas.width = canvas1.width;
+    //         // cacheCanvas.height = canvas1.height;
+    //         // cacheCanvascxt.drawImage(Img,0, 0,400,400);
+    //         cxt1.clearRect(0, 0, canvas1.width, canvas1.height);
+    //         cxt1.save();
+    //         // cxt1.beginPath();
+    //         // cxt1.scale(this.rotate,this.rotate);
+    //         cxt1.translate(10, 10)
+    //         cxt1.rotate(Math.PI / 180 * (this.rotate) * 10)
+    //         cxt1.drawImage(Img, 0, 0, 200, 200);
+    //         cxt1.restore();
+
+    //         cxt1.save();
+    //         // cxt1.beginPath();
+    //         // cxt1.scale(this.rotate,this.rotate);
+    //         // cxt1.translate(100,100)
+    //         // console.log(Math.PI/180*(this.rotate)*10)
+    //         // cxt1.rotate(Math.PI/180*(this.rotate)*10)
+    //         cxt1.drawImage(Img, 200, 200, 200, 200);
+    //         cxt1.restore();
+    //     },
+    //     move: function () {
+    //         if (this.rotate >= 1) {
+    //             this.flag = true
+    //         }
+    //         if (this.rotate <= -1) {
+    //             this.flag = false
+    //         }
+    //         if (this.flag) {
+    //             this.rotate -= 0.01;
+    //         } else {
+    //             this.rotate += 0.01;
+    //         }
+    //         this.drawImg()
+    //     }
+
+    // }
+    // const randomInt = (min, max) => { return Math.floor(Math.random() * (max - min) + min) };
+    // var colorArr = ["#00BFFF", "#778899", "#BA55D3", "#C71585", "#7FFF00", "#F5DEB3", "#CD853F", "#B22222", "#7CFC00", "#48D1CC"];
+
+    // function ball() { }
+    // ball.prototype = {
+    //     create: function () {
+    //         this.x = randomInt(0, 800);
+    //         this.y = randomInt(0, 800);
+    //         this.r = randomInt(0, 10);
+    //         this.color = colorArr[randomInt(0, 10)];
+    //         this.posX = randomInt(-1, 1);
+    //         this.posY = randomInt(-1, 1);
+    //     },
+    //     draw: function () {
+    //         cxt3.beginPath();
+    //         cxt3.fillStyle = this.color;
+    //         // console.log(this.x,this.y)
+    //         cxt3.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    //         cxt3.fill()
+    //     },
+    //     move: function () {
+    //         this.x += this.posX;
+    //         this.y += this.posY;
+    //         if (this.x - this.r < 0 || this.x + this.r > 800) {
+    //             this.posX = -this.posX;
+    //         }
+    //         if (this.y - this.r < 0 || this.y + this.r > 800) {
+    //             this.posY = -this.posY;
+    //         }
+    //         this.draw()
+    //     }
+    // }
+    // function act1(Img, x) {
+    //     var cxt = canvas1.getContext('2d');
+    //     cxt.clearRect(0, 0, canvas1.width, canvas1.height);
+    //     cxt.rotate(Math.PI / 6)
+    //     cxt.drawImage(Img, x, 0, 200, 200);
+    //     // window.requestAnimationFrame(act1);
+    // }
+
+    // var Percent = Math.PI;
+    // function act3() {
+    //     Percent += Math.PI / 90;
+    //     var cxt = canvas2.getContext('2d');
+    //     // cxt.clearRect(0,0,canvas2.width,canvas2.height);
+    //     canvas2Fun(Percent, 10);
+    //     window.requestAnimationFrame(act3);
+    // }
 </script>
+
 </html>

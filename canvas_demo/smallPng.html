@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>666</title>
+    <style>
+</style>
+</head>
+<script src="./js/jquery.js"></script>
+<body>
+    <div>
+        <input type="file" name='pic'  id="uploadInp" value="上传图片"/>
+
+        <input type="button" value="提交" class="uploadForm"/>
+    </div>
+</body>
+<script type="text/javascript">
+$('.uploadForm').on('click', function () {
+        var formData = new FormData();
+        var file = $("#uploadInp")[0].files[0];
+        formData.append("file", file);
+        var parmes = {
+            module:formData,
+            auth:"kSjd0DSidFljpP0O2vIrl",
+            notifyUrl:"https://www.mydomain.com/imageAPINotify",
+            oriFileUrl:"./img/2-1.png",
+            oriFileHash:"7fa367231a53a43435c3fefe8048b1de",
+        }
+        $.ajax({
+                url: "https://www.xiliapi.com/api",
+                type: 'POST',
+                data: parmes,
+                processData: false,
+                contentType: "application/x-www-form-urlencoded",
+                beforeSend: function () {
+                    console.log("正在进行，请稍候");
+                },
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        })
+ </script>
+</html>
